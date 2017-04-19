@@ -54,7 +54,7 @@ And then execute:
 Declare the record as being discardable
 
 ``` ruby
-class Post
+class Post < ActiveRecord::Base
   include Discard::Model
 end
 ```
@@ -92,7 +92,7 @@ take more time and cause more headaches in the lon run. But if you know you
 need it, I believe you ❤.
 
 ``` ruby
-class Post
+class Post < ActiveRecord::Base
   include Discard::Model
   default_scope -> { kept }
 end
