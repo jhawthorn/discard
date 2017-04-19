@@ -1,5 +1,4 @@
-require "discard/version"
+require "active_record"
 
-module Discard
-  # Your code goes here...
-end
+require "discard/version"
+require "discard/model"

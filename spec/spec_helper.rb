@@ -1,4 +1,25 @@
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'discard'
+
+require 'database_cleaner'
+require 'with_model'
+
+DatabaseCleaner.strategy = :transaction
+
 RSpec.configure do |config|
+  config.before :suite do
+    ActiveRecord::Base.establish_connection :adapter => 'sqlite3', database: ':memory:'
+  end
+
+  config.before :each do
+    DatabaseCleaner.start
+  end
+  config.after :each do
+    DatabaseCleaner.clean
+  end
+
+  config.extend WithModel
+
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end

@@ -49,8 +49,6 @@ And then execute:
 
 ## Usage
 
-(This doesn't work yet. Doing some readme driven development)
-
 **Declare a record as discardable**
 
 Declare the record as being discardable
@@ -85,6 +83,23 @@ Post.discarded       # => []
 Post.all             # => [#<Post id: 1, ...>]
 Post.kept            # => []
 Post.discarded       # => [#<Post id: 1, ...>]
+```
+
+**Default scope**
+
+It's usually not necessary and best to avoid adding a default scope. It will
+take more time and cause more headaches in the lon run. But if you know you
+need it, I believe you ❤.
+
+``` ruby
+class Post
+  include Discard::Model
+  default_scope -> { kept }
+end
+
+Post.all                       # Only kept posts
+Post.with_discarded            # All Posts
+Post.with_discarded.discarded  # Only discarded posts
 ```
 
 ## Development
