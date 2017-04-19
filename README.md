@@ -57,7 +57,7 @@ Declare the record as being discardable
 
 ``` ruby
 class Post
-  discardable
+  include Discard::Model
 end
 ```
 
