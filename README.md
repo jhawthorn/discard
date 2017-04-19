@@ -2,6 +2,8 @@
 
 Soft deletes for ActiveRecord done right.
 
+![](http://i.hawth.ca/u/ron-swanson-computer-trash.gif)
+
 ## Why should I use this?
 
 I've maintained the [paranoia](https://github.com/rubysherpas/paranoia) gem
