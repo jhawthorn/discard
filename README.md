@@ -104,6 +104,13 @@ Post.with_discarded            # All Posts
 Post.with_discarded.discarded  # Only discarded posts
 ```
 
+## Non-features
+
+* Restoring records (this will probably be added)
+* Deleting dependent records (this will likely be added)
+* Callbacks (this will probably be added)
+* Support for AR counter cache columns
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
