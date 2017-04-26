@@ -27,6 +27,8 @@ These libraries have a number of issues:
 * `dependent: :destroy` associations are deleted when performing soft-destroys,
   requiring any dependent records to also be `acts_as_paranoid` to avoid losing data.
 * Default scopes make ActiveRecord slow.
+* When trying to use a soft-deleted record, the associations don't work
+  * Can be worked around with `belongs_to :child, -> { with_deleted }`, but doesn't work with joins or eager-loading.
 
 There are some use cases where these behaviours make sense, but more often,
 developers are looking to just hide some records, or mark them as inactive.
