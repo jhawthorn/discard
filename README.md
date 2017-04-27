@@ -22,22 +22,21 @@ and awkward behaviour.
 
 * A default scope is added to hide soft-deleted records, which necessitates
   adding `.with_deleted` to associations or anywhere soft-deleted records
-  should be found.
-  * A workaround for associations is `belongs_to :child, -> { with_deleted }`,
-    but this is broken for joins or eager-loading.
-* `delete` is overridden (`really_delete` will actually delete the record)
-* `destroy` is overridden (`really_destroy` will actually delete the record)
-* `dependent: :destroy` associations are deleted when performing soft-destroys,
-  requiring any dependent records to also be `acts_as_paranoid` to avoid losing data.
-* Soft deleting a record will destroy any `dependent: :destroy` associations. Probably not what you want!
-  * This leads to all dependent records also needing to be `acts_as_paranoid`
+  should be found. :disappointed:
+  * Adding `belongs_to :child, -> { with_deleted }` helps, but doesn't work for
+    joins and eager-loading.
+* `delete` is overridden (`really_delete` will actually delete the record) :unamused:
+* `destroy` is overridden (`really_destroy` will actually delete the record) :pensive:
+* `dependent: :destroy` associations are deleted when performing soft-destroys :scream:
+  * requiring any dependent records to also be `acts_as_paranoid` to avoid losing data. :grimacing:
 
-There are some use cases where these behaviours make sense, but more often,
-developers are looking to just hide some records, or mark them as inactive.
+There are some use cases where these behaviours make sense: if you really did
+want to _almost_ delete the record. More often developers are just looking to
+hide some records, or mark them as inactive.
 
 Discard takes a different approach. It doesn't override any ActiveRecord
-methods and instead simply provides convenience methods for discarding
-(hiding), restoring, and accessing records.
+methods and instead simply provides convenience methods and scopes for
+discarding (hiding), restoring, and querying records.
 
 ## Installation
 
@@ -149,9 +148,8 @@ In both of these cases restoring either of these records will do right thing!
 
 **Default scope**
 
-It's usually undesirable to add a default scope. It will take more time and
-cause more headaches in the lon run. But if you know you need it, I believe you
-❤, and it's easy to add yourself.
+It's usually undesirable to add a default scope. It will take more effort to
+work around and will cause more headaches. If you know you need a default scope, it's easy to add yourself ❤.
 
 ``` ruby
 class Post < ActiveRecord::Base
