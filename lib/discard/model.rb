@@ -3,18 +3,21 @@ module Discard
     extend ActiveSupport::Concern
 
     included do
+      class_attribute :discard_column
+      self.discard_column = :discarded_at
+
       scope :kept, ->{ undiscarded }
-      scope :undiscarded, ->{ where(discarded_at: nil) }
-      scope :discarded, ->{ where.not(discarded_at: nil) }
-      scope :with_discarded, ->{ unscope(where: :discarded_at) }
+      scope :undiscarded, ->{ where(discard_column => nil) }
+      scope :discarded, ->{ where.not(discard_column => nil) }
+      scope :with_discarded, ->{ unscope(where: discard_column) }
     end
 
     def discarded?
-      !!discarded_at
+      !!self[self.class.discard_column]
     end
 
     def discard
-      touch(:discarded_at) unless discarded?
+      touch(self.class.discard_column) unless discarded?
     end
   end
 end
