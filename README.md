@@ -2,7 +2,7 @@
 
 Soft deletes for ActiveRecord done right.
 
-![](http://i.hawth.ca/u/ron-swanson-computer-trash.gif)
+<img src="http://i.hawth.ca/u/ron-swanson-computer-trash.gif" width="800" />
 
 ## What does this do?
 
