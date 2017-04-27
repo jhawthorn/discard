@@ -10,7 +10,7 @@ A simple ActiveRecord mixin to add conventions for flagging records as discarded
 
 ## Why should I use this?
 
-I've been worked with and have helped maintain
+I've worked with and have helped maintain
 [paranoia](https://github.com/rubysherpas/paranoia) for a while. I'm convinced
 it does the wrong thing for most cases.
 
@@ -92,7 +92,8 @@ Post.discarded       # => [#<Post id: 1, ...>]
 **From a controller**
 
 Unlike its predecessors, controller actions will need a small modification to
-discard records instead of deleting them.
+discard records instead of deleting them. Just use `discard` instead of
+`destroy`.
 
 ``` ruby
 def destroy
