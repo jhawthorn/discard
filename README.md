@@ -101,7 +101,7 @@ def destroy
 end
 ```
 
-**Associations**
+**Working with associations**
 
 Under paranoia, soft deleting a record will destroy any `dependent: :destroy`
 associations. Probably not what you want! This leads to all dependent records
