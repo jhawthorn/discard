@@ -3,7 +3,8 @@ module Discard
     extend ActiveSupport::Concern
 
     included do
-      scope :kept, ->{ where(discarded_at: nil) }
+      scope :kept, ->{ undiscarded }
+      scope :undiscarded, ->{ where(discarded_at: nil) }
       scope :discarded, ->{ where.not(discarded_at: nil) }
       scope :with_discarded, ->{ unscope(where: :discarded_at) }
     end
