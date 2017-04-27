@@ -64,7 +64,7 @@ end
 
 
 ``` ruby
-class AddDiscardableToPost < ActiveRecord::Migration[5.0]
+class AddDiscardToPosts < ActiveRecord::Migration[5.0]
   def up
     add_column :posts, :discarded_at, :datetime
   end
@@ -90,9 +90,7 @@ Post.discarded       # => [#<Post id: 1, ...>]
 
 **From a controller**
 
-Unlike its predecessors, controller actions will need a small modification to
-discard records instead of deleting them. Just use `discard` instead of
-`destroy`.
+Controller actions need a small modification to discard records instead of deleting them. Just replace `destroy` with `discard`.
 
 ``` ruby
 def destroy
