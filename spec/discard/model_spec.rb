@@ -23,6 +23,10 @@ RSpec.describe Discard::Model do
         expect(Post.kept).to eq([post])
       end
 
+      it "is included in undiscarded scope" do
+        expect(Post.undiscarded).to eq([post])
+      end
+
       it "is not included in discarded scope" do
         expect(Post.discarded).to eq([])
       end
@@ -55,6 +59,10 @@ RSpec.describe Discard::Model do
 
       it "is not included in kept scope" do
         expect(Post.kept).to eq([])
+      end
+
+      it "is not included in undiscarded scope" do
+        expect(Post.undiscarded).to eq([])
       end
 
       it "is included in discarded scope" do
@@ -106,6 +114,10 @@ RSpec.describe Discard::Model do
         expect(klass.kept).to eq([record])
       end
 
+      it "is included in undiscarded scope" do
+        expect(klass.undiscarded).to eq([record])
+      end
+
       it "is included in with_discarded scope" do
         expect(klass.with_discarded).to eq([record])
       end
@@ -123,6 +135,10 @@ RSpec.describe Discard::Model do
       end
 
       it "is not included in kept scope" do
+        expect(klass.kept).to eq([])
+      end
+
+      it "is not included in undiscarded scope" do
         expect(klass.kept).to eq([])
       end
 
