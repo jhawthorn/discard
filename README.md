@@ -160,6 +160,17 @@ Post.with_discarded            # All Posts
 Post.with_discarded.discarded  # Only discarded posts
 ```
 
+**Custom column**
+
+If you're migrating from paranoia, you might want to continue using the same
+column.
+
+``` ruby
+class Post < ActiveRecord::Base
+  include Discard::Model
+  self.discard_column = :deleted_at
+end
+```
 
 ## Non-features
 
