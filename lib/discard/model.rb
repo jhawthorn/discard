@@ -17,7 +17,15 @@ module Discard
     end
 
     def discard
-      touch(self.class.discard_column) unless discarded?
+      unless discarded?
+        self[self.class.discard_column] = Time.current
+      end
+      save
+    end
+
+    def undiscard
+      self[self.class.discard_column] = nil
+      save
     end
   end
 end

@@ -48,6 +48,20 @@ RSpec.describe Discard::Model do
           }.to change { post.reload.discarded_at }
         end
       end
+
+      describe '#undiscard' do
+        it "doesn't change discarded_at" do
+          expect {
+            post.undiscard
+          }.not_to change { post.discarded_at }
+        end
+
+        it "doesn't change discarded_at in DB" do
+          expect {
+            post.undiscard
+          }.not_to change { post.reload.discarded_at }
+        end
+      end
     end
 
     context "discarded Post" do
@@ -84,6 +98,20 @@ RSpec.describe Discard::Model do
           expect {
             post.discard
           }.not_to change { post.reload.discarded_at }
+        end
+      end
+
+      describe '#undiscard' do
+        it "clears discarded_at" do
+          expect {
+            post.undiscard
+          }.to change { post.discarded_at }.to(nil)
+        end
+
+        it "clears discarded_at in DB" do
+          expect {
+            post.undiscard
+          }.to change { post.reload.discarded_at }.to(nil)
         end
       end
     end
@@ -208,6 +236,20 @@ RSpec.describe Discard::Model do
           }.to change { post.reload.deleted_at }
         end
       end
+
+      describe '#undiscard' do
+        it "doesn't change discarded_at" do
+          expect {
+            post.undiscard
+          }.not_to change { post.deleted_at }
+        end
+
+        it "doesn't change discarded_at in DB" do
+          expect {
+            post.undiscard
+          }.not_to change { post.reload.deleted_at }
+        end
+      end
     end
 
     context "discarded Post" do
@@ -244,6 +286,20 @@ RSpec.describe Discard::Model do
           expect {
             post.discard
           }.not_to change { post.reload.deleted_at }
+        end
+      end
+
+      describe '#undiscard' do
+        it "clears discarded_at" do
+          expect {
+            post.undiscard
+          }.to change { post.deleted_at }.to(nil)
+        end
+
+        it "clears discarded_at in DB" do
+          expect {
+            post.undiscard
+          }.to change { post.reload.deleted_at }.to(nil)
         end
       end
     end
