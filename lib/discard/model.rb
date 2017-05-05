@@ -12,6 +12,12 @@ module Discard
       scope :with_discarded, ->{ unscope(where: discard_column) }
     end
 
+    class_methods do
+      def discard_all
+        all.each(&:discard)
+      end
+    end
+
     def discarded?
       !!self[self.class.discard_column]
     end
