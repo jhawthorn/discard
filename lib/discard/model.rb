@@ -10,6 +10,8 @@ module Discard
       scope :undiscarded, ->{ where(discard_column => nil) }
       scope :discarded, ->{ where.not(discard_column => nil) }
       scope :with_discarded, ->{ unscope(where: discard_column) }
+
+      define_model_callbacks :discard
     end
 
     class_methods do
@@ -24,9 +26,13 @@ module Discard
 
     def discard
       unless discarded?
-        self[self.class.discard_column] = Time.current
+        with_transaction_returning_status do
+          run_callbacks(:discard) do
+            self[self.class.discard_column] = Time.current
+            save
+          end
+        end
       end
-      save
     end
 
     def undiscard

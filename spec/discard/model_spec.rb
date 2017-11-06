@@ -340,4 +340,62 @@ RSpec.describe Discard::Model do
       expect(post2.reload).not_to be_discarded
     end
   end
+
+  describe 'callbacks' do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+        before_discard :do_before_discard
+        before_save :do_before_save
+        after_save :do_after_save
+        after_discard :do_after_discard
+
+        def do_before_discard; end
+        def do_before_save; end
+        def do_after_save; end
+        def do_after_discard; end
+      end
+    end
+
+    def abort_callback
+      if ActiveRecord::VERSION::MAJOR < 5
+        false
+      else
+        throw :abort
+      end
+    end
+
+    it "runs callbacks in correct order" do
+      post = Post.create!
+
+      expect(post).to receive(:do_before_discard).ordered
+      expect(post).to receive(:do_before_save).ordered
+      expect(post).to receive(:do_after_save).ordered
+      expect(post).to receive(:do_after_discard).ordered
+
+      expect(post.discard).to be true
+      expect(post).to be_discarded
+    end
+
+    context 'before_discard' do
+      it "can allow discard" do
+        post = Post.create!
+        expect(post).to receive(:do_before_discard).and_return(true)
+        expect(post.discard).to be true
+        expect(post).to be_discarded
+      end
+
+      it "can prevents discard" do
+        post = Post.create!
+        expect(post).to receive(:do_before_discard) { abort_callback }
+        expect(post.discard).to be false
+        expect(post).not_to be_discarded
+      end
+    end
+  end
 end
