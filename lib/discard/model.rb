@@ -14,7 +14,7 @@ module Discard
       define_model_callbacks :discard
     end
 
-    class_methods do
+    module ClassMethods
       def discard_all
         all.each(&:discard)
       end
