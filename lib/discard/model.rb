@@ -20,10 +20,12 @@ module Discard
       end
     end
 
+    # @return [true,false] true if this record has been discarded, otherwise false
     def discarded?
       !!self[self.class.discard_column]
     end
 
+    # @return [true,false] true if successful, otherwise false
     def discard
       unless discarded?
         with_transaction_returning_status do
@@ -35,6 +37,7 @@ module Discard
       end
     end
 
+    # @return [true,false] true if successful, otherwise false
     def undiscard
       self[self.class.discard_column] = nil
       save
