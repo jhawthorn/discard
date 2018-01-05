@@ -8,36 +8,6 @@ Soft deletes for ActiveRecord done right.
 
 A simple ActiveRecord mixin to add conventions for flagging records as discarded.
 
-## Why should I use this?
-
-I've worked with and have helped maintain
-[paranoia](https://github.com/rubysherpas/paranoia) for a while. I'm convinced
-it does the wrong thing for most cases.
-
-Paranoia and
-[acts_as_paranoid](https://github.com/ActsAsParanoid/acts_as_paranoid) both
-attempt to emulate deletes by setting a column and adding a default scope on the
-model. This requires some ActiveRecord hackery, and leads to some surprising
-and awkward behaviour.
-
-* A default scope is added to hide soft-deleted records, which necessitates
-  adding `.with_deleted` to associations or anywhere soft-deleted records
-  should be found. :disappointed:
-  * Adding `belongs_to :child, -> { with_deleted }` helps, but doesn't work for
-    joins and eager-loading.
-* `delete` is overridden (`really_delete` will actually delete the record) :unamused:
-* `destroy` is overridden (`really_destroy` will actually delete the record) :pensive:
-* `dependent: :destroy` associations are deleted when performing soft-destroys :scream:
-  * requiring any dependent records to also be `acts_as_paranoid` to avoid losing data. :grimacing:
-
-There are some use cases where these behaviours make sense: if you really did
-want to _almost_ delete the record. More often developers are just looking to
-hide some records, or mark them as inactive.
-
-Discard takes a different approach. It doesn't override any ActiveRecord
-methods and instead simply provides convenience methods and scopes for
-discarding (hiding), restoring, and querying records.
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -73,15 +43,16 @@ end
 
 
 **Discard a record**
+
 ```
 Post.all             # => [#<Post id: 1, ...>]
 Post.kept            # => [#<Post id: 1, ...>]
 Post.discarded       # => []
 
-@post = Post.first   # => #<Post id: 1, ...>
-@post.discard!
-@post.discarded?     # => true
-@post.discarded_at   # => 2017-04-18 18:49:49 -0700
+post = Post.first   # => #<Post id: 1, ...>
+post.discard        # => true
+post.discarded?     # => true
+post.discarded_at   # => 2017-04-18 18:49:49 -0700
 
 Post.all             # => [#<Post id: 1, ...>]
 Post.kept            # => []
@@ -174,6 +145,9 @@ end
 
 **Callbacks**
 
+Callbacks can be run before, after, or around the discard operation.
+A likely use is discarding or deleting associated records (but see "Working with associations" for an alternative).
+
 ``` ruby
 class Post < ActiveRecord::Base
   include Discard::Model
@@ -186,12 +160,41 @@ class Post < ActiveRecord::Base
 end
 ```
 
-
 ## Non-features
 
-* Restoring records (this will probably be added)
-* Discarding dependent records (this will likely be added)
 * Special handling of AR counter cache columns - The counter cache counts the total number of records, both kept and discarded.
+* Recursive discards (like AR's dependent: destroy) - This can be avoided using queries (See "Working with associations") or emulated using callbacks.
+* Recursive restores - This concept is fundamentally broken, but not necessary if the recursive discards are avoided.
+
+## Why not paranoia or acts_as_paranoid?
+
+I've worked with and have helped maintain
+[paranoia](https://github.com/rubysherpas/paranoia) for a while. I'm convinced
+it does the wrong thing for most cases.
+
+Paranoia and
+[acts_as_paranoid](https://github.com/ActsAsParanoid/acts_as_paranoid) both
+attempt to emulate deletes by setting a column and adding a default scope on the
+model. This requires some ActiveRecord hackery, and leads to some surprising
+and awkward behaviour.
+
+* A default scope is added to hide soft-deleted records, which necessitates
+  adding `.with_deleted` to associations or anywhere soft-deleted records
+  should be found. :disappointed:
+  * Adding `belongs_to :child, -> { with_deleted }` helps, but doesn't work for
+    joins and eager-loading.
+* `delete` is overridden (`really_delete` will actually delete the record) :unamused:
+* `destroy` is overridden (`really_destroy` will actually delete the record) :pensive:
+* `dependent: :destroy` associations are deleted when performing soft-destroys :scream:
+  * requiring any dependent records to also be `acts_as_paranoid` to avoid losing data. :grimacing:
+
+There are some use cases where these behaviours make sense: if you really did
+want to _almost_ delete the record. More often developers are just looking to
+hide some records, or mark them as inactive.
+
+Discard takes a different approach. It doesn't override any ActiveRecord
+methods and instead simply provides convenience methods and scopes for
+discarding (hiding), restoring, and querying records.
 
 ## Development
 
