@@ -172,11 +172,25 @@ class Post < ActiveRecord::Base
 end
 ```
 
+**Callbacks**
+
+``` ruby
+class Post < ActiveRecord::Base
+  include Discard::Model
+
+  has_many :comments
+
+  after_discard do
+    comments.discard_all
+  end
+end
+```
+
+
 ## Non-features
 
 * Restoring records (this will probably be added)
 * Discarding dependent records (this will likely be added)
-* Callbacks (this will probably be added)
 * Special handling of AR counter cache columns - The counter cache counts the total number of records, both kept and discarded.
 
 ## Development
