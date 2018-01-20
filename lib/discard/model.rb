@@ -17,7 +17,7 @@ module Discard
 
     module ClassMethods
       def discard_all
-        all.each(&:discard)
+        update_all(:"#{self.discard_column}" => Time.current)
       end
       def undiscard_all
         all.each(&:undiscard)
