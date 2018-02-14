@@ -12,11 +12,15 @@ module Discard
       scope :with_discarded, ->{ unscope(where: discard_column) }
 
       define_model_callbacks :discard
+      define_model_callbacks :undiscard
     end
 
     module ClassMethods
       def discard_all
         all.each(&:discard)
+      end
+      def undiscard_all
+        all.each(&:undiscard)
       end
     end
 
@@ -39,8 +43,14 @@ module Discard
 
     # @return [true,false] true if successful, otherwise false
     def undiscard
-      self[self.class.discard_column] = nil
-      save
+      if discarded?
+        with_transaction_returning_status do
+          run_callbacks(:undiscard) do
+            self[self.class.discard_column] = nil
+            save
+          end
+        end
+      end
     end
   end
 end

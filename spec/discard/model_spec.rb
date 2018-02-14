@@ -341,7 +341,43 @@ RSpec.describe Discard::Model do
     end
   end
 
-  describe 'callbacks' do
+  describe '.undiscard_all' do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.string :title
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+      end
+    end
+
+    let!(:post) { Post.create!(title: "My very first post", discarded_at: Time.now) }
+    let!(:post2) { Post.create!(title: "A second post", discarded_at: Time.now) }
+
+    it "can undiscard all posts" do
+      expect {
+        Post.undiscard_all
+      }.to   change { post.reload.discarded? }.to(false)
+        .and change { post2.reload.discarded? }.to(false)
+    end
+
+    it "can undiscard a single post" do
+      Post.where(id: post.id).undiscard_all
+      expect(post.reload).not_to be_discarded
+      expect(post2.reload).to be_discarded
+    end
+
+    it "can undiscard no records" do
+      Post.where(id: []).undiscard_all
+      expect(post.reload).to be_discarded
+      expect(post2.reload).to be_discarded
+    end
+  end
+
+  describe 'discard callbacks' do
     with_model :Post, scope: :all do
       table do |t|
         t.datetime :discarded_at
@@ -370,9 +406,9 @@ RSpec.describe Discard::Model do
       end
     end
 
-    it "runs callbacks in correct order" do
-      post = Post.create!
+    let!(:post) { Post.create! }
 
+    it "runs callbacks in correct order" do
       expect(post).to receive(:do_before_discard).ordered
       expect(post).to receive(:do_before_save).ordered
       expect(post).to receive(:do_after_save).ordered
@@ -384,17 +420,71 @@ RSpec.describe Discard::Model do
 
     context 'before_discard' do
       it "can allow discard" do
-        post = Post.create!
         expect(post).to receive(:do_before_discard).and_return(true)
         expect(post.discard).to be true
         expect(post).to be_discarded
       end
 
-      it "can prevents discard" do
-        post = Post.create!
+      it "can prevent discard" do
         expect(post).to receive(:do_before_discard) { abort_callback }
         expect(post.discard).to be false
         expect(post).not_to be_discarded
+      end
+    end
+  end
+
+  describe 'undiscard callbacks' do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+        before_undiscard :do_before_undiscard
+        before_save :do_before_save
+        after_save :do_after_save
+        after_undiscard :do_after_undiscard
+
+        def do_before_undiscard; end
+        def do_before_save; end
+        def do_after_save; end
+        def do_after_undiscard; end
+      end
+    end
+
+    def abort_callback
+      if ActiveRecord::VERSION::MAJOR < 5
+        false
+      else
+        throw :abort
+      end
+    end
+
+    let!(:post) { Post.create! discarded_at: Time.now }
+
+    it "runs callbacks in correct order" do
+      expect(post).to receive(:do_before_undiscard).ordered
+      expect(post).to receive(:do_before_save).ordered
+      expect(post).to receive(:do_after_save).ordered
+      expect(post).to receive(:do_after_undiscard).ordered
+
+      expect(post.undiscard).to be true
+      expect(post).not_to be_discarded
+    end
+
+    context 'before_undiscard' do
+      it "can allow undiscard" do
+        expect(post).to receive(:do_before_undiscard).and_return(true)
+        expect(post.undiscard).to be true
+        expect(post).not_to be_discarded
+      end
+
+      it "can prevent undiscard" do
+        expect(post).to receive(:do_before_undiscard) { abort_callback }
+        expect(post.undiscard).to be false
+        expect(post).to be_discarded
       end
     end
   end

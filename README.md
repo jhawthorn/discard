@@ -146,7 +146,7 @@ end
 
 **Callbacks**
 
-Callbacks can be run before, after, or around the discard operation.
+Callbacks can be run before, after, or around the discard and undiscard operations.
 A likely use is discarding or deleting associated records (but see "Working with associations" for an alternative).
 
 ``` ruby
@@ -157,6 +157,10 @@ class Post < ActiveRecord::Base
 
   after_discard do
     comments.discard_all
+  end
+
+  after_undiscard do
+    comments.undiscard_all
   end
 end
 ```
