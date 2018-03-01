@@ -23,8 +23,13 @@ module Discard
       def dispose_all
         update_all(:"#{self.discard_column}" => Time.current)
       end
+
       def undiscard_all
         all.each(&:undiscard)
+      end
+
+      def undispose_all
+        update_all(:"#{self.discard_column}" => nil)
       end
     end
 
