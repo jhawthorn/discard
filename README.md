@@ -71,6 +71,23 @@ def destroy
 end
 ```
 
+
+**Undiscard a record**
+
+```
+post = Post.first   # => #<Post id: 1, ...>
+post.undiscard      # => true
+```
+
+***From a controller***
+
+```
+def update
+  @post.undiscard
+  redirect_to users_url, notice: "Post undiscarded"
+end
+```
+
 **Working with associations**
 
 Under paranoia, soft deleting a record will destroy any `dependent: :destroy`
@@ -161,6 +178,19 @@ class Post < ActiveRecord::Base
 
   after_undiscard do
     comments.undiscard_all
+  end
+end
+```
+
+**Working with Devise**
+
+A common use case is to apply discard to a User record. Even though a user has been discarded they can still login and continue their session.
+If you are using Devise and wish for discarded users to be unable to login and stop their session you can override Devise's method.
+
+```
+class User < ActiveRecord::Base
+  def active_for_authentication?
+    super && !discarded_at
   end
 end
 ```
