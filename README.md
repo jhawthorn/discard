@@ -216,8 +216,8 @@ and awkward behaviour.
 * A default scope is added to hide soft-deleted records, which necessitates
   adding `.with_deleted` to associations or anywhere soft-deleted records
   should be found. :disappointed:
-  * Adding `belongs_to :child, -> { with_deleted }` helps, but doesn't work for
-    joins and eager-loading.
+  * Adding `belongs_to :child, -> { with_deleted }` helps, but doesn't work for joins and eager-loading in older version of rails (See [detail](https://github.com/rubysherpas/paranoia/issues/355#issuecomment-315770435))
+
 * `delete` is overridden (`really_delete` will actually delete the record) :unamused:
 * `destroy` is overridden (`really_destroy` will actually delete the record) :pensive:
 * `dependent: :destroy` associations are deleted when performing soft-destroys :scream:
