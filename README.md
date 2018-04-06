@@ -220,6 +220,7 @@ and awkward behaviour.
     joins and eager-loading.
 * `delete` is overridden (`really_delete` will actually delete the record) :unamused:
 * `destroy` is overridden (`really_destroy` will actually delete the record) :pensive:
+* `delete_all` is overridden (`orig_delete_all` will actually delete the collection) :unamused:
 * `dependent: :destroy` associations are deleted when performing soft-destroys :scream:
   * requiring any dependent records to also be `acts_as_paranoid` to avoid losing data. :grimacing:
 
