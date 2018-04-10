@@ -339,6 +339,45 @@ RSpec.describe Discard::Model do
       expect(post.reload).not_to be_discarded
       expect(post2.reload).not_to be_discarded
     end
+
+    context "through a collection" do
+      with_model :Comment, scope: :all do
+        table do |t|
+          t.belongs_to :user
+          t.datetime :discarded_at
+          t.timestamps null: false
+        end
+
+        model do
+          include Discard::Model
+        end
+      end
+
+      with_model :User, scope: :all do
+        table do |t|
+          t.timestamps null: false
+        end
+
+        model do
+          include Discard::Model
+
+          has_many :comments
+        end
+      end
+
+      it "can be discard all related posts" do
+        user1 = User.create!
+        user2 = User.create!
+
+        2.times { user1.comments.create! }
+        2.times { user1.comments.create! }
+
+        user1.comments.discard_all
+
+        expect(user1.comments).to all(be_discarded)
+        expect(user2.comments).to all(be_undiscarded)
+      end
+    end
   end
 
   describe '.undiscard_all' do
