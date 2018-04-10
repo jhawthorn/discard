@@ -167,6 +167,10 @@ Callbacks can be run before, after, or around the discard and undiscard operatio
 A likely use is discarding or deleting associated records (but see "Working with associations" for an alternative).
 
 ``` ruby
+class Comment < ActiveRecord::Base
+  include Discard::Model
+end
+
 class Post < ActiveRecord::Base
   include Discard::Model
 
