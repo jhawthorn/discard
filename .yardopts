@@ -1,0 +1,8 @@
+--protected
+--no-private
+--embed-mixin ClassMethods
+-
+README.md
+CHANGELOG.md
+CODE_OF_CONDUCT.md
+LICENSE.txt

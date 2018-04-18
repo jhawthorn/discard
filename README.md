@@ -186,6 +186,8 @@ class Post < ActiveRecord::Base
 end
 ```
 
+*Warning:* Please note that callbacks for save and update are run when discarding/undiscarding a record 
+
 **Working with Devise**
 
 A common use case is to apply discard to a User record. Even though a user has been discarded they can still login and continue their session.
