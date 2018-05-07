@@ -188,6 +188,14 @@ end
 
 *Warning:* Please note that callbacks for save and update are run when discarding/undiscarding a record 
 
+
+**Performance tuning**
+`discard_all` and `undiscard_all` is intended to behave like `destroy_all` which has callbacks, validations, and does one query per record. If performance is a big concern, you may consider replacing it with:
+
+`scope.update_all(discarded_at: Time.current)`
+or
+`scope.update_all(discarded_at: nil)`
+
 **Working with Devise**
 
 A common use case is to apply discard to a User record. Even though a user has been discarded they can still login and continue their session.
