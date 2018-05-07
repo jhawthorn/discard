@@ -1,4 +1,9 @@
 module Discard
+  # Handles soft deletes of records.
+  #
+  # Options:
+  #
+  # - :discard_column - The columns used to track soft delete, defaults to `:discarded_at`.
   module Model
     extend ActiveSupport::Concern
 
@@ -15,41 +20,69 @@ module Discard
       define_model_callbacks :undiscard
     end
 
+    # :nodoc:
     module ClassMethods
+      # Discards the records by instantiating each
+      # record and calling its {#discard} method.
+      # Each object's callbacks are executed.
+      # Returns the collection of objects that were discarded.
+      #
+      # Note: Instantiation, callback execution, and update of each
+      # record can be time consuming when you're discarding many records at
+      # once. It generates at least one SQL +UPDATE+ query per record (or
+      # possibly more, to enforce your callbacks). If you want to discard many
+      # rows quickly, without concern for their associations or callbacks, use
+      # #update_all(discarded_at: Time.current) instead.
+      #
+      # ==== Examples
+      #
+      #   Person.where(age: 0..18).discard_all
       def discard_all
-        all.each(&:discard)
+        kept.each(&:discard)
       end
+
+      # Undiscards the records by instantiating each
+      # record and calling its {#undiscard} method.
+      # Each object's callbacks are executed.
+      # Returns the collection of objects that were undiscarded.
+      #
+      # Note: Instantiation, callback execution, and update of each
+      # record can be time consuming when you're undiscarding many records at
+      # once. It generates at least one SQL +UPDATE+ query per record (or
+      # possibly more, to enforce your callbacks). If you want to undiscard many
+      # rows quickly, without concern for their associations or callbacks, use
+      # #update_all(discarded_at: nil) instead.
+      #
+      # ==== Examples
+      #
+      #   Person.where(age: 0..18).undiscard_all
       def undiscard_all
-        all.each(&:undiscard)
+        discarded.each(&:undiscard)
       end
     end
 
-    # @return [true,false] true if this record has been discarded, otherwise false
+    # @return [Boolean] true if this record has been discarded, otherwise false
     def discarded?
-      !!self[self.class.discard_column]
+      self[self.class.discard_column].present?
     end
 
-    # @return [true,false] true if successful, otherwise false
+    # Discard record
+    #
+    # @return [Boolean] true if successful, otherwise false
     def discard
-      unless discarded?
-        with_transaction_returning_status do
-          run_callbacks(:discard) do
-            self[self.class.discard_column] = Time.current
-            save
-          end
-        end
+      return if discarded?
+      run_callbacks(:discard) do
+        update_attribute(self.class.discard_column, Time.current)
       end
     end
 
-    # @return [true,false] true if successful, otherwise false
+    # Undiscard record
+    #
+    # @return [Boolean] true if successful, otherwise false
     def undiscard
-      if discarded?
-        with_transaction_returning_status do
-          run_callbacks(:undiscard) do
-            self[self.class.discard_column] = nil
-            save
-          end
-        end
+      return unless discarded?
+      run_callbacks(:undiscard) do
+        update_attribute(self.class.discard_column, nil)
       end
     end
   end

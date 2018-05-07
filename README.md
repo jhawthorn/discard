@@ -186,6 +186,9 @@ class Post < ActiveRecord::Base
 end
 ```
 
+*Warning:* Please note that callbacks for save and update are run when discarding/undiscarding a record 
+
+
 **Performance tuning**
 `discard_all` and `undiscard_all` is intended to behave like `destroy_all` which has callbacks, validations, and does one query per record. If performance is a big concern, you may consider replacing it with:
 

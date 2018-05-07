@@ -1,3 +1,4 @@
 module Discard
-  VERSION = "1.0.0"
+  # Discard version
+  VERSION = "1.0.0".freeze
 end
