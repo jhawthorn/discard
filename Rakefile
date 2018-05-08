@@ -1,9 +1,8 @@
-require "bundler/gem_tasks"
+require 'bundler/setup'
+require 'bundler/gem_tasks'
+require 'rspec/core/rake_task'
 
-begin
-  require 'rspec/core/rake_task'
-  RSpec::Core::RakeTask.new(:spec)
-rescue LoadError
-end
+RSpec::Core::RakeTask.new(:rspec)
 
-task :default => :spec
+desc 'Run the test suite'
+task default: :rspec

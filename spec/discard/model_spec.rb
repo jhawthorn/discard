@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Discard::Model do
   context "with simple Post model" do
     with_model :Post, scope: :all do
@@ -49,6 +51,20 @@ RSpec.describe Discard::Model do
         end
       end
 
+      describe '#discard!' do
+        it "sets discarded_at" do
+          expect {
+            post.discard!
+          }.to change { post.discarded_at }
+        end
+
+        it "sets discarded_at in DB" do
+          expect {
+            post.discard!
+          }.to change { post.reload.discarded_at }
+        end
+      end
+
       describe '#undiscard' do
         it "doesn't change discarded_at" do
           expect {
@@ -60,6 +76,14 @@ RSpec.describe Discard::Model do
           expect {
             post.undiscard
           }.not_to change { post.reload.discarded_at }
+        end
+      end
+
+      describe '#undiscard!' do
+        it "raises Discard::RecordNotUndiscarded" do
+          expect {
+            post.undiscard!
+          }.to raise_error(Discard::RecordNotUndiscarded)
         end
       end
     end
@@ -101,6 +125,14 @@ RSpec.describe Discard::Model do
         end
       end
 
+      describe '#discard!' do
+        it "raises Discard::RecordNotDiscarded" do
+          expect {
+            post.discard!
+          }.to raise_error(Discard::RecordNotDiscarded)
+        end
+      end
+
       describe '#undiscard' do
         it "clears discarded_at" do
           expect {
@@ -111,6 +143,20 @@ RSpec.describe Discard::Model do
         it "clears discarded_at in DB" do
           expect {
             post.undiscard
+          }.to change { post.reload.discarded_at }.to(nil)
+        end
+      end
+
+      describe '#undiscard!' do
+        it "clears discarded_at" do
+          expect {
+            post.undiscard!
+          }.to change { post.discarded_at }.to(nil)
+        end
+
+        it "clears discarded_at in DB" do
+          expect {
+            post.undiscard!
           }.to change { post.reload.discarded_at }.to(nil)
         end
       end
@@ -469,6 +515,15 @@ RSpec.describe Discard::Model do
         expect(post.discard).to be false
         expect(post).not_to be_discarded
       end
+
+      describe '#discard!' do
+        it "raises Discard::RecordNotDiscarded" do
+          expect(post).to receive(:do_before_discard) { abort_callback }
+          expect {
+            post.discard!
+          }.to raise_error(Discard::RecordNotDiscarded)
+        end
+      end
     end
   end
 
@@ -524,6 +579,15 @@ RSpec.describe Discard::Model do
         expect(post).to receive(:do_before_undiscard) { abort_callback }
         expect(post.undiscard).to be false
         expect(post).to be_discarded
+      end
+
+      describe '#undiscard!' do
+        it "raises Discard::RecordNotDiscarded" do
+          expect(post).to receive(:do_before_undiscard) { abort_callback }
+          expect {
+            post.undiscard!
+          }.to raise_error(Discard::RecordNotUndiscarded)
+        end
       end
     end
   end
