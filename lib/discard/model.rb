@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Discard
   # Handles soft deletes of records.
   #
@@ -66,7 +68,7 @@ module Discard
       self[self.class.discard_column].present?
     end
 
-    # Discard record
+    # Discard the record in the database
     #
     # @return [Boolean] true if successful, otherwise false
     def discard
@@ -76,7 +78,19 @@ module Discard
       end
     end
 
-    # Undiscard record
+    # Discard the record in the database
+    #
+    # There's a series of callbacks associated with #discard!. If the
+    # <tt>before_discard</tt> callback throws +:abort+ the action is cancelled
+    # and #discard! raises {Discard::RecordNotDiscarded}.
+    #
+    # @return [Boolean] true if successful
+    # @raise {Discard::RecordNotDiscarded}
+    def discard!
+      discard || _raise_record_not_discarded
+    end
+
+    # Undiscard the record in the database
     #
     # @return [Boolean] true if successful, otherwise false
     def undiscard
@@ -84,6 +98,28 @@ module Discard
       run_callbacks(:undiscard) do
         update_attribute(self.class.discard_column, nil)
       end
+    end
+
+    # Discard the record in the database
+    #
+    # There's a series of callbacks associated with #undiscard!. If the
+    # <tt>before_undiscard</tt> callback throws +:abort+ the action is cancelled
+    # and #undiscard! raises {Discard::RecordNotUndiscarded}.
+    #
+    # @return [Boolean] true if successful
+    # @raise {Discard::RecordNotUndiscarded}
+    def undiscard!
+      undiscard || _raise_record_not_undiscarded
+    end
+
+    private
+
+    def _raise_record_not_discarded
+      raise ::Discard::RecordNotDiscarded.new("Failed to discard the record", self)
+    end
+
+    def _raise_record_not_undiscarded
+      raise ::Discard::RecordNotUndiscarded.new("Failed to undiscard the record", self)
     end
   end
 end
