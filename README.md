@@ -32,10 +32,15 @@ class Post < ActiveRecord::Base
 end
 ```
 
+You can either generate a migration using:
+```
+rails generate migration add_discarded_at_to_posts discarded_at:datetime:index
+```
 
+or create one yourself like the one below:
 ``` ruby
 class AddDiscardToPosts < ActiveRecord::Migration[5.0]
-  def up
+  def change
     add_column :posts, :discarded_at, :datetime
     add_index :posts, :discarded_at
   end
