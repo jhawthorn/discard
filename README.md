@@ -209,7 +209,7 @@ If you are using Devise and wish for discarded users to be unable to login and s
 ```
 class User < ActiveRecord::Base
   def active_for_authentication?
-    super && !discarded_at
+    super && !discarded?
   end
 end
 ```
