@@ -119,10 +119,10 @@ discarded. Just override the `kept` scope on the Comment model.
 
 ``` ruby
 class Comment < ActiveRecord::Base
-  has_many :posts
+  belongs_to :post
 
   include Discard::Model
-  scope :kept, -> { undiscarded.joins(:posts).merge(Post.kept) }
+  scope :kept, -> { undiscarded.joins(:post).merge(Post.kept) }
 end
 
 Comment.kept
