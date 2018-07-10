@@ -6,12 +6,15 @@ module Discard
   # Options:
   #
   # - :discard_column - The columns used to track soft delete, defaults to `:discarded_at`.
+  # - :discard_unique_column - If set, uses an additional column to support unique indexes that only apply to
+  #   kept records. Defaults to nil
   module Model
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :discard_column
+      class_attribute :discard_column, :discard_unique_column
       self.discard_column = :discarded_at
+      self.discard_unique_column = nil
 
       scope :kept, ->{ undiscarded }
       scope :undiscarded, ->{ where(discard_column => nil) }
@@ -74,7 +77,13 @@ module Discard
     def discard
       return if discarded?
       run_callbacks(:discard) do
-        update_attribute(self.class.discard_column, Time.current)
+
+        columns = { self.class.discard_column => Time.current }
+        if self.class.discard_unique_column
+          columns[self.class.discard_unique_column] = attributes[self.class.primary_key]
+        end
+
+        update(columns)
       end
     end
 
@@ -96,7 +105,12 @@ module Discard
     def undiscard
       return unless discarded?
       run_callbacks(:undiscard) do
-        update_attribute(self.class.discard_column, nil)
+        columns = { self.class.discard_column => nil }
+        if self.class.discard_unique_column
+          columns[self.class.discard_unique_column] = self.class.columns_hash[self.class.discard_unique_column.to_s].default
+        end
+
+        update(columns)
       end
     end
 

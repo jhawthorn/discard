@@ -214,6 +214,53 @@ class User < ActiveRecord::Base
 end
 ```
 
+**Database uniqueness for kept records**
+
+A common pattern with soft deletes is to validate a field for uniqueness for only undeleted unique records. Since most databases
+[do not support unique indexes on null fields](https://stackoverflow.com/questions/3712222/does-mysql-ignore-null-values-on-unique-constraints),
+there needs to be a separate non null field that handles the unique indexes.
+
+To do this, first make the migration with an extra lock field, and set the default:
+
+```ruby
+create_table :posts do |t|
+  t.string :title, null: false
+  t.datetime :discarded_at
+  t.integer :discarded_at_unique, null: false, default: 0
+  t.timestamps null: false
+
+  t.index [:title, :discarded_at_unique], name: 'discarded_index', unique: true
+end
+```
+
+*(Note: the lock field type should be the same datatype as your primary key)*
+
+Next, set up your model:
+
+
+```ruby
+class Post < ActiveRecord::Base
+  include Discard::Model
+  self.discard_unique_column = :discarded_at_unique
+
+  # Not required for database-level locking, but will make uniqueness
+  # error messages nicer to read
+  validates_uniqueness_of :title, scope: [:discarded_at_unique]
+end
+```
+
+Now you can make posts with unique validations as long as the records are kept:
+
+```ruby
+post1 = Post.create!(title: 'My title')
+post2 = Post.create!(title: 'My title') # error
+post1.discard!
+post2 = Post.create!(title: 'My title') # ok
+post1.undiscard! # will error
+```
+
+(Solution came from [this stack overflow post](https://stackoverflow.com/questions/3492485/mysql-with-soft-deletion-unique-key-and-foreign-key-constraints)).
+
 ## Non-features
 
 * Special handling of AR counter cache columns - The counter cache counts the total number of records, both kept and discarded.

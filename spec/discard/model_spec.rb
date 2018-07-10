@@ -1,19 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Discard::Model do
-  context "with simple Post model" do
-    with_model :Post, scope: :all do
-      table do |t|
-        t.string :title
-        t.datetime :discarded_at
-        t.timestamps null: false
-      end
-
-      model do
-        include Discard::Model
-      end
-    end
-
+  shared_examples "a Post model" do
     context "an undiscarded Post" do
       let!(:post) { Post.create!(title: "My very first post") }
 
@@ -160,6 +148,29 @@ RSpec.describe Discard::Model do
           }.to change { post.reload.discarded_at }.to(nil)
         end
       end
+    end
+  end
+
+  context "with simple Post model" do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.string :title
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+        validates_presence_of :title
+      end
+    end
+
+    it_behaves_like "a Post model"
+
+    it 'does not persist an invalid record' do
+      post = Post.new(title: nil)
+      expect(post.valid?).to eq(false)
+      expect { post.discard! }.to raise_error(Discard::RecordNotDiscarded)
     end
   end
 
@@ -349,6 +360,41 @@ RSpec.describe Discard::Model do
         end
       end
     end
+  end
+
+  context "with a unique index" do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.string :title, null: false
+        t.datetime :discarded_at
+        t.integer :discarded_at_unique, null: false, default: 0
+        t.timestamps null: false
+
+        t.index [:title, :discarded_at_unique], name: 'discarded_index', unique: true
+      end
+
+      model do
+        include Discard::Model
+        self.discard_unique_column = :discarded_at_unique
+      end
+    end
+
+    let!(:post) { Post.create!(title: "My very first post") }
+
+    it "supports unique indexes" do
+      expect { Post.create!(title: "My very first post") }.to raise_error ActiveRecord::RecordNotUnique
+      post.discard!
+      expect(post.reload.discarded_at_lock).to eq(post.id)
+      expect { Post.create!(title: "My very first post") }.to_not raise_error
+    end
+
+    it "can undiscard" do
+      post.discard
+      post.undiscard
+      expect(post.reload.discarded_at_lock).to eq(0)
+    end
+
+    it_behaves_like "a Post model"
   end
 
   describe '.discard_all' do
