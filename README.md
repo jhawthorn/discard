@@ -48,7 +48,7 @@ end
 ```
 
 
-**Discard a record**
+#### Discard a record
 
 ```
 Post.all             # => [#<Post id: 1, ...>]
@@ -65,7 +65,7 @@ Post.kept            # => []
 Post.discarded       # => [#<Post id: 1, ...>]
 ```
 
-**From a controller**
+***From a controller***
 
 Controller actions need a small modification to discard records instead of deleting them. Just replace `destroy` with `discard`.
 
@@ -77,7 +77,7 @@ end
 ```
 
 
-**Undiscard a record**
+#### Undiscard a record
 
 ```
 post = Post.first   # => #<Post id: 1, ...>
@@ -93,7 +93,7 @@ def update
 end
 ```
 
-**Working with associations**
+#### Working with associations
 
 Under paranoia, soft deleting a record will destroy any `dependent: :destroy`
 associations. Probably not what you want! This leads to all dependent records
@@ -138,7 +138,7 @@ SQL databases are very good at this, and performance should not be an issue.
 In both of these cases restoring either of these records will do right thing!
 
 
-**Default scope**
+#### Default scope
 
 It's usually undesirable to add a default scope. It will take more effort to
 work around and will cause more headaches. If you know you need a default scope, it's easy to add yourself ❤.
@@ -154,7 +154,7 @@ Post.with_discarded            # All Posts
 Post.with_discarded.discarded  # Only discarded posts
 ```
 
-**Custom column**
+#### Custom column
 
 If you're migrating from paranoia, you might want to continue using the same
 column.
@@ -166,7 +166,7 @@ class Post < ActiveRecord::Base
 end
 ```
 
-**Callbacks**
+#### Callbacks
 
 Callbacks can be run before, after, or around the discard and undiscard operations.
 A likely use is discarding or deleting associated records (but see "Working with associations" for an alternative).
@@ -191,17 +191,17 @@ class Post < ActiveRecord::Base
 end
 ```
 
-*Warning:* Please note that callbacks for save and update are run when discarding/undiscarding a record 
+*Warning:* Please note that callbacks for save and update are run when discarding/undiscarding a record
 
 
-**Performance tuning**
+#### Performance tuning
 `discard_all` and `undiscard_all` is intended to behave like `destroy_all` which has callbacks, validations, and does one query per record. If performance is a big concern, you may consider replacing it with:
 
 `scope.update_all(discarded_at: Time.current)`
 or
 `scope.update_all(discarded_at: nil)`
 
-**Working with Devise**
+#### Working with Devise
 
 A common use case is to apply discard to a User record. Even though a user has been discarded they can still login and continue their session.
 If you are using Devise and wish for discarded users to be unable to login and stop their session you can override Devise's method.
