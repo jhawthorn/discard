@@ -451,9 +451,16 @@ RSpec.describe Discard::Model do
         2.times { user1.comments.create! }
 
         user1.comments.discard_all
-
-        expect(user1.comments).to all(be_discarded)
-        expect(user2.comments).to all(be_undiscarded)
+        user1.comments.each do |comment|
+          expect(comment).to be_discarded
+          expect(comment).to_not be_undiscarded
+          expect(comment).to_not be_kept
+        end
+        user2.comments.each do |comment|
+          expect(comment).to_not be_discarded
+          expect(comment).to be_undiscarded
+          expect(comment).to be_kept
+        end
       end
     end
   end
