@@ -37,6 +37,14 @@ RSpec.describe Discard::Model do
         expect(post).not_to be_discarded
       end
 
+      it "should be undiscarded?" do
+        expect(post).to be_undiscarded
+      end
+
+      it "should be kept?" do
+        expect(post).to be_undiscarded
+      end
+
       describe '#discard' do
         it "sets discarded_at" do
           expect {
@@ -109,6 +117,14 @@ RSpec.describe Discard::Model do
 
       it "should be discarded?" do
         expect(post).to be_discarded
+      end
+
+      it "should not be undiscarded?" do
+        expect(post).to_not be_undiscarded
+      end
+
+      it "should not be kept?" do
+        expect(post).to_not be_kept
       end
 
       describe '#discard' do
@@ -269,6 +285,14 @@ RSpec.describe Discard::Model do
         expect(post).not_to be_discarded
       end
 
+      it "should be undiscarded?" do
+        expect(post).to be_undiscarded
+      end
+
+      it "should be kept?" do
+        expect(post).to be_kept
+      end
+
       describe '#discard' do
         it "sets discarded_at" do
           expect {
@@ -319,6 +343,14 @@ RSpec.describe Discard::Model do
 
       it "should be discarded?" do
         expect(post).to be_discarded
+      end
+
+      it "should not be undiscarded?" do
+        expect(post).to_not be_undiscarded
+      end
+
+      it "should not be kept?" do
+        expect(post).to_not be_kept
       end
 
       describe '#discard' do

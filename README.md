@@ -59,6 +59,8 @@ post = Post.first   # => #<Post id: 1, ...>
 post.discard        # => true
 post.discard!       # => Discard::RecordNotDiscarded: Failed to discard the record
 post.discarded?     # => true
+post.undiscarded?   # => false
+post.kept?          # => false
 post.discarded_at   # => 2017-04-18 18:49:49 -0700
 
 Post.all             # => [#<Post id: 1, ...>]
@@ -126,6 +128,10 @@ class Comment < ActiveRecord::Base
 
   include Discard::Model
   scope :kept, -> { undiscarded.joins(:post).merge(Post.kept) }
+
+  def kept?
+    undiscarded? && post.kept?
+  end
 end
 
 Comment.kept
