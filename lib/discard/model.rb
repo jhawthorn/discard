@@ -72,7 +72,7 @@ module Discard
     #
     # @return [Boolean] true if successful, otherwise false
     def discard
-      return if discarded?
+      return true if discarded?
       run_callbacks(:discard) do
         update_attribute(self.class.discard_column, Time.current)
       end
@@ -94,7 +94,7 @@ module Discard
     #
     # @return [Boolean] true if successful, otherwise false
     def undiscard
-      return unless discarded?
+      return true unless discarded?
       run_callbacks(:undiscard) do
         update_attribute(self.class.discard_column, nil)
       end

@@ -81,9 +81,7 @@ RSpec.describe Discard::Model do
 
       describe '#undiscard!' do
         it "raises Discard::RecordNotUndiscarded" do
-          expect {
-            post.undiscard!
-          }.to raise_error(Discard::RecordNotUndiscarded)
+          expect(post.undiscard!).to eq true
         end
       end
     end
@@ -126,10 +124,8 @@ RSpec.describe Discard::Model do
       end
 
       describe '#discard!' do
-        it "raises Discard::RecordNotDiscarded" do
-          expect {
-            post.discard!
-          }.to raise_error(Discard::RecordNotDiscarded)
+        it "returns true on already discarded records" do
+          expect(post.discard!).to eq true
         end
       end
 
