@@ -50,7 +50,7 @@ end
 
 #### Discard a record
 
-```
+```ruby
 Post.all             # => [#<Post id: 1, ...>]
 Post.kept            # => [#<Post id: 1, ...>]
 Post.discarded       # => []
@@ -79,14 +79,14 @@ end
 
 #### Undiscard a record
 
-```
+```ruby
 post = Post.first   # => #<Post id: 1, ...>
 post.undiscard      # => true
 ```
 
 ***From a controller***
 
-```
+```ruby
 def update
   @post.undiscard
   redirect_to users_url, notice: "Post undiscarded"
@@ -206,7 +206,7 @@ or
 A common use case is to apply discard to a User record. Even though a user has been discarded they can still login and continue their session.
 If you are using Devise and wish for discarded users to be unable to login and stop their session you can override Devise's method.
 
-```
+```ruby
 class User < ActiveRecord::Base
   def active_for_authentication?
     super && !discarded?
