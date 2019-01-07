@@ -61,6 +61,38 @@ module Discard
       def undiscard_all
         discarded.each(&:undiscard)
       end
+
+      def discard(id)
+        if id.is_a?(Array)
+          find(id).each(&:discard)
+        else
+          find(id).discard
+        end
+      end
+
+      def discard!(id)
+        if id.is_a?(Array)
+          find(id).each(&:discard!)
+        else
+          find(id).discard!
+        end
+      end
+
+      def undiscard(id)
+        if id.is_a?(Array)
+          find(id).each(&:undiscard)
+        else
+          find(id).undiscard
+        end
+      end
+
+      def undiscard!(id)
+        if id.is_a?(Array)
+          find(id).each(&:undiscard!)
+        else
+          find(id).undiscard!
+        end
+      end
     end
 
     # @return [Boolean] true if this record has been discarded, otherwise false
