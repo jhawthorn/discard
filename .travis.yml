@@ -11,4 +11,5 @@ env:
     - RAILS_VERSION='~> 5.0.0'
     - RAILS_VERSION='~> 5.1.0'
     - RAILS_VERSION='~> 5.2.x'
+    - RAILS_VERSION='~> 6'
 before_install: gem install bundler -v 1.14.6
