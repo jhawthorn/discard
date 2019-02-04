@@ -10,16 +10,23 @@ module Discard
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :discard_column
+      class_attribute :discard_column, :archive_column
       self.discard_column = :discarded_at
+      self.archive_column = :archived_at
 
       scope :kept, ->{ undiscarded }
+      scope :actual, -> { undiscarded.unarchived }
       scope :undiscarded, ->{ where(discard_column => nil) }
       scope :discarded, ->{ where.not(discard_column => nil) }
       scope :with_discarded, ->{ unscope(where: discard_column) }
+      scope :unarchived, -> { where(archive_column => nil) }
+      scope :archived, -> { where.not(archive_column => nil) }
 
       define_model_callbacks :discard
       define_model_callbacks :undiscard
+      define_model_callbacks :archive
+      define_model_callbacks :unarchive
+      define_model_callbacks :restore
     end
 
     # :nodoc:
@@ -68,6 +75,16 @@ module Discard
       self[self.class.discard_column].present?
     end
 
+    # @return [Boolean] true if this record has been archived, otherwise false
+    def archived?
+      self[self.class.archive_column].present?
+    end
+
+    # @return [Boolean] true if this record hasn't been discarded or archived, otherwise false
+    def actual?
+      !archived? && !discarded?
+    end
+
     # Discard the record in the database
     #
     # @return [Boolean] true if successful, otherwise false
@@ -75,6 +92,16 @@ module Discard
       return if discarded?
       run_callbacks(:discard) do
         update_attribute(self.class.discard_column, Time.current)
+      end
+    end
+
+    # Archive the record in the database
+    #
+    # @return [Boolean] true if successful, otherwise false
+    def archive
+      return if archived?
+      run_callbacks(:archive) do
+        update_attribute(self.class.archive_column, Time.current)
       end
     end
 
@@ -97,6 +124,27 @@ module Discard
       return unless discarded?
       run_callbacks(:undiscard) do
         update_attribute(self.class.discard_column, nil)
+      end
+    end
+
+    # Unarchive the record in the database
+    #
+    # @return [Boolean] true if successful, otherwise false
+    def unarchive
+      return unless archived?
+      run_callbacks(:unarchive) do
+        update_attribute(self.class.archive_column, nil)
+      end
+    end
+
+    # Restore (undiscard and unarchive) the record in the database
+    #
+    # @return [Boolean] true if successful, otherwise false
+    def restore
+      return unless archived? || discarded?
+      run_callbacks(:restore) do
+        assign_attributes(self.class.archive_column => nil, self.class.discard_column => nil)
+        save(validate: false)
       end
     end
 
