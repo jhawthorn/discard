@@ -82,6 +82,7 @@ end
 ```ruby
 post = Post.first   # => #<Post id: 1, ...>
 post.undiscard      # => true
+post.discarded_at   # => nil
 ```
 
 ***From a controller***
