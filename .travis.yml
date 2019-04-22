@@ -8,8 +8,8 @@ rvm:
   - 2.6.3
 env:
   matrix:
-    - RAILS_VERSION='~> 4.2.0'
-    - RAILS_VERSION='~> 5.0.0'
+    - RAILS_VERSION='~> 4.2.0' SQLITE_VERSION='~> 1.3.6'
+    - RAILS_VERSION='~> 5.0.0' SQLITE_VERSION='~> 1.3.6'
     - RAILS_VERSION='~> 5.1.0'
     - RAILS_VERSION='~> 5.2.x'
     - RAILS_VERSION='~> 6.0.0.beta3'
