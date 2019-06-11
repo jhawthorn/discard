@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "active_record"
+require "active_support"
 
 require "discard/version"
 require "discard/errors"

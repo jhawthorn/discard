@@ -13,9 +13,17 @@ module Discard
       class_attribute :discard_column
       self.discard_column = :discarded_at
 
+      if defined?(Mongoid::Document) and self.ancestors.include? Mongoid::Document
+        self.field self.discard_column, type: Time, default: nil
+      end
+
       scope :kept, ->{ undiscarded }
       scope :undiscarded, ->{ where(discard_column => nil) }
-      scope :discarded, ->{ where.not(discard_column => nil) }
+      if defined?(ActiveRecord::Base) and self.ancestors.include? ActiveRecord::Base
+        scope :discarded, ->{ where.not(discard_column => nil) }
+      elsif defined?(Mongoid::Document) and self.ancestors.include? Mongoid::Document
+        scope :discarded, ->{ where(discard_column.ne => nil) }
+      end
       scope :with_discarded, ->{ unscope(where: discard_column) }
 
       define_model_callbacks :discard

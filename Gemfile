@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 rails_version = ENV['RAILS_VERSION']
-gem 'activerecord', rails_version
+gem 'activesupport', rails_version
 
 if sqlite_version = ENV['SQLITE_VERSION']
   gem 'sqlite3', sqlite_version
