@@ -426,6 +426,30 @@ RSpec.describe Discard::Model do
     end
   end
 
+  describe '.discard_all!' do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.string :title
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+      end
+    end
+
+    let!(:post) { Post.create!(title: "My very first post") }
+    let!(:post2) { Post.create!(title: "A second post") }
+
+    it "can discard all posts" do
+      expect {
+        Post.discard_all!
+      }.to   change { post.reload.discarded? }.to(true)
+        .and change { post2.reload.discarded? }.to(true)
+    end
+  end
+
   describe '.undiscard_all' do
     with_model :Post, scope: :all do
       table do |t|

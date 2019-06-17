@@ -43,6 +43,25 @@ module Discard
         kept.each(&:discard)
       end
 
+      # Discards the records by instantiating each
+      # record and calling its {#discard!} method.
+      # Each object's callbacks are executed.
+      # Returns the collection of objects that were discarded.
+      #
+      # Note: Instantiation, callback execution, and update of each
+      # record can be time consuming when you're discarding many records at
+      # once. It generates at least one SQL +UPDATE+ query per record (or
+      # possibly more, to enforce your callbacks). If you want to discard many
+      # rows quickly, without concern for their associations or callbacks, use
+      # #update_all!(discarded_at: Time.current) instead.
+      #
+      # ==== Examples
+      #
+      #   Person.where(age: 0..18).discard_all!
+      def discard_all!
+        kept.each(&:discard!)
+      end
+
       # Undiscards the records by instantiating each
       # record and calling its {#undiscard} method.
       # Each object's callbacks are executed.
