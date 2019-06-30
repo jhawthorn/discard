@@ -106,6 +106,16 @@ RSpec.describe Discard::Model do
       end
     end
 
+    context "searching Posts by discard_by column" do
+      let(:user) { User.create(name: 'Superman') }
+      let(:post_1) { Post.create(title: "A discarded post").tap { |p| p.discard(user) } }
+      let(:post_2) { Post.create(title: "Another discarded post").discard }
+
+      it 'only returns posts discarded by the user' do
+        expect(Post.discarded_by(user)).to eq([post_1])
+      end
+    end
+
     context "discarded Post" do
       let!(:post) { Post.create!(title: "A discarded post", discarded_at: Time.parse('2017-01-01')) }
 
