@@ -6,11 +6,19 @@ RSpec.describe Discard::Model do
       table do |t|
         t.string :title
         t.datetime :discarded_at
+        t.integer :discarded_by_id
         t.timestamps null: false
       end
 
       model do
         include Discard::Model
+      end
+    end
+
+    with_model :User, scope: :all do
+      table do |t|
+        t.string :name
+        t.timestamps null: false
       end
     end
 
@@ -48,6 +56,16 @@ RSpec.describe Discard::Model do
           expect {
             post.discard
           }.to change { post.reload.discarded_at }
+        end
+
+        context "when a user is passed in" do
+          let(:user) { User.create!(name: 'deleter') }
+
+          it 'sets discarded_by_id in DB' do
+            expect {
+              post.discard(user)
+            }.to change { post.discarded_by_id }
+          end
         end
       end
 
@@ -167,6 +185,7 @@ RSpec.describe Discard::Model do
     with_model :WithDefaultScope, scope: :all do
       table do |t|
         t.datetime :discarded_at
+        t.integer :discarded_by_id
         t.timestamps null: false
       end
 
@@ -237,12 +256,14 @@ RSpec.describe Discard::Model do
       table do |t|
         t.string :title
         t.datetime :deleted_at
+        t.datetime :deleted_by_id
         t.timestamps null: false
       end
 
       model do
         include Discard::Model
         self.discard_column = :deleted_at
+        self.discard_by_column = :deleted_by_id
       end
     end
 
@@ -356,6 +377,7 @@ RSpec.describe Discard::Model do
       table do |t|
         t.string :title
         t.datetime :discarded_at
+        t.integer :discarded_by_id
         t.timestamps null: false
       end
 
@@ -391,6 +413,7 @@ RSpec.describe Discard::Model do
         table do |t|
           t.belongs_to :user
           t.datetime :discarded_at
+          t.integer :discarded_by_id
           t.timestamps null: false
         end
 
@@ -431,6 +454,7 @@ RSpec.describe Discard::Model do
       table do |t|
         t.string :title
         t.datetime :discarded_at
+        t.integer :discarded_by_id
         t.timestamps null: false
       end
 
@@ -466,6 +490,7 @@ RSpec.describe Discard::Model do
     with_model :Post, scope: :all do
       table do |t|
         t.datetime :discarded_at
+        t.integer :discarded_by_id
         t.timestamps null: false
       end
 
@@ -531,6 +556,7 @@ RSpec.describe Discard::Model do
     with_model :Post, scope: :all do
       table do |t|
         t.datetime :discarded_at
+        t.integer :discarded_by_id
         t.timestamps null: false
       end
 

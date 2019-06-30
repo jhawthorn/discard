@@ -11,12 +11,16 @@ module Discard
 
     included do
       class_attribute :discard_column
+      class_attribute :discard_by_column
+
       self.discard_column = :discarded_at
+      self.discard_by_column = :discarded_by_id
 
       scope :kept, ->{ undiscarded }
       scope :undiscarded, ->{ where(discard_column => nil) }
       scope :discarded, ->{ where.not(discard_column => nil) }
       scope :with_discarded, ->{ unscope(where: discard_column) }
+      scope :discarded_by, -> (user_id){ where(discard_by_column => user_id) }
 
       define_model_callbacks :discard
       define_model_callbacks :undiscard
@@ -39,8 +43,9 @@ module Discard
       # ==== Examples
       #
       #   Person.where(age: 0..18).discard_all
-      def discard_all
-        kept.each(&:discard)
+      #   Person.where(age: 0..16).discard_all(current_user)
+      def discard_all(user = nil)
+        kept.each { |record| record.discard(user) }
       end
 
       # Undiscards the records by instantiating each
@@ -70,11 +75,14 @@ module Discard
 
     # Discard the record in the database
     #
+    # @param [User] a User or equivelant instance
     # @return [Boolean] true if successful, otherwise false
-    def discard
+    def discard(user = nil)
       return if discarded?
       run_callbacks(:discard) do
-        update_attribute(self.class.discard_column, Time.current)
+        public_send("#{self.class.discard_column}=", Time.current)
+        public_send("#{self.class.discard_by_column}=", user.try(:id))
+        save(validate: false)
       end
     end
 
@@ -86,8 +94,8 @@ module Discard
     #
     # @return [Boolean] true if successful
     # @raise {Discard::RecordNotDiscarded}
-    def discard!
-      discard || _raise_record_not_discarded
+    def discard!(user = nil)
+      discard(user) || _raise_record_not_discarded
     end
 
     # Undiscard the record in the database
@@ -96,7 +104,9 @@ module Discard
     def undiscard
       return unless discarded?
       run_callbacks(:undiscard) do
-        update_attribute(self.class.discard_column, nil)
+        public_send("#{self.class.discard_column}=", nil)
+        public_send("#{self.class.discard_by_column}=", nil)
+        save(validate: false)
       end
     end
 

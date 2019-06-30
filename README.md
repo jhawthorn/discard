@@ -34,7 +34,7 @@ end
 
 You can either generate a migration using:
 ```
-rails generate migration add_discarded_at_to_posts discarded_at:datetime:index
+rails generate migration add_discarded_at_to_posts discarded_at:datetime:index discarded_by_id:integer:index
 ```
 
 or create one yourself like the one below:
@@ -43,6 +43,7 @@ class AddDiscardToPosts < ActiveRecord::Migration[5.0]
   def change
     add_column :posts, :discarded_at, :datetime
     add_index :posts, :discarded_at
+    add_index :posts, :discarded_by_id, :integer
   end
 end
 ```
@@ -65,12 +66,23 @@ Post.kept            # => []
 Post.discarded       # => [#<Post id: 1, ...>]
 ```
 
+If you want to pass a user as the "discarder"
+
+```ruby
+post = Post.first
+user = User.first
+post.discard(user)
+post.discard_all(user)
+```
+
 ***From a controller***
 
 Controller actions need a small modification to discard records instead of deleting them. Just replace `destroy` with `discard`.
 
 ``` ruby
 def destroy
+  # optionally you can pass the current user here
+  # @post.discard(current_user)
   @post.discard
   redirect_to users_url, notice: "Post removed"
 end
@@ -119,9 +131,11 @@ discarded. Just override the `kept` scope on the Comment model.
 
 ``` ruby
 class Comment < ActiveRecord::Base
-  belongs_to :post
-
   include Discard::Model
+
+  belongs_to :post
+  belongs_to :discarded_by, class_name: User
+
   scope :kept, -> { undiscarded.joins(:post).merge(Post.kept) }
 end
 
@@ -163,6 +177,7 @@ column.
 class Post < ActiveRecord::Base
   include Discard::Model
   self.discard_column = :deleted_at
+  self.discard_by_column = :deleted_by
 end
 ```
 
