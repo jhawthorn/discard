@@ -42,7 +42,7 @@ RSpec.describe Discard::Model do
       end
 
       it "should be kept?" do
-        expect(post).to be_undiscarded
+        expect(post).to be_kept
       end
 
       describe '#discard' do
