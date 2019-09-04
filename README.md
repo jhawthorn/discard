@@ -57,6 +57,7 @@ Post.discarded       # => []
 
 post = Post.first   # => #<Post id: 1, ...>
 post.discard        # => true
+post.discard!       # => Discard::RecordNotDiscarded: Failed to discard the record
 post.discarded?     # => true
 post.discarded_at   # => 2017-04-18 18:49:49 -0700
 
@@ -82,6 +83,7 @@ end
 ```ruby
 post = Post.first   # => #<Post id: 1, ...>
 post.undiscard      # => true
+post.undiscard!     # => Discard::RecordNotUndiscarded: Failed to undiscard the record
 ```
 
 ***From a controller***
