@@ -67,6 +67,11 @@ module Discard
     def discarded?
       self[self.class.discard_column].present?
     end
+     
+    # @return [Boolean] false if this record has been discarded, otherwise true
+    def kept?
+      !discarded?
+    end
 
     # Discard the record in the database
     #
