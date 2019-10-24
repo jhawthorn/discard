@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Add `discard_all!` and `undiscard_all!`
+
 ### Version 1.1.0
 Release date: 2019-05-03
 
