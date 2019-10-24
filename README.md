@@ -258,7 +258,11 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/jhawthorn/discard.
+Please consider filing an issue with the details of any features you'd like to see before implementing them. Discard is feature-complete and we are only interested in adding additional features that won't require substantial maintenance burden and that will benefit all users of the gem. We encourage anyone that needs additional or different behaviour to either create their own gem that builds off of discard or implement a new package with the different behaviour.
+
+Discard is very simple and we like it that way. Creating your own clone or fork with slightly different behaviour may not be that much work!
+
+If you find a bug in discard, please report it! We try to keep up with any issues and keep the gem running smoothly for everyone! You can report issues [here](https://github.com/jhawthorn/discard/issues).
 
 ## License
 
