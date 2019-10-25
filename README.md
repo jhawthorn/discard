@@ -84,6 +84,7 @@ end
 post = Post.first   # => #<Post id: 1, ...>
 post.undiscard      # => true
 post.undiscard!     # => Discard::RecordNotUndiscarded: Failed to undiscard the record
+post.discarded_at   # => nil
 ```
 
 ***From a controller***
