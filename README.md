@@ -223,6 +223,12 @@ end
 * Recursive discards (like AR's dependent: destroy) - This can be avoided using queries (See "Working with associations") or emulated using callbacks.
 * Recursive restores - This concept is fundamentally broken, but not necessary if the recursive discards are avoided.
 
+## Extensions
+
+Discard provides the smallest subset of soft-deletion features that we think are useful to all users of the gem. We welcome the addition of gems that work with Discard to provide additional features.
+
+- [discard-rails-observers](https://github.com/pelargir/discard-rails-observers) integrates discard with the [rails-observers gem](https://github.com/rails/rails-observers)
+
 ## Why not paranoia or acts_as_paranoid?
 
 I've worked with and have helped maintain
