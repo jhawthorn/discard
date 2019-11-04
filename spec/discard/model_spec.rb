@@ -37,6 +37,14 @@ RSpec.describe Discard::Model do
         expect(post).not_to be_discarded
       end
 
+      it "should be undiscarded?" do
+        expect(post).to be_undiscarded
+      end
+
+      it "should be kept?" do
+        expect(post).to be_kept
+      end
+
       describe '#discard' do
         it "sets discarded_at" do
           expect {
@@ -109,6 +117,14 @@ RSpec.describe Discard::Model do
 
       it "should be discarded?" do
         expect(post).to be_discarded
+      end
+
+      it "should not be undiscarded?" do
+        expect(post).to_not be_undiscarded
+      end
+
+      it "should not be kept?" do
+        expect(post).to_not be_kept
       end
 
       describe '#discard' do
@@ -269,6 +285,14 @@ RSpec.describe Discard::Model do
         expect(post).not_to be_discarded
       end
 
+      it "should be undiscarded?" do
+        expect(post).to be_undiscarded
+      end
+
+      it "should be kept?" do
+        expect(post).to be_kept
+      end
+
       describe '#discard' do
         it "sets discarded_at" do
           expect {
@@ -319,6 +343,14 @@ RSpec.describe Discard::Model do
 
       it "should be discarded?" do
         expect(post).to be_discarded
+      end
+
+      it "should not be undiscarded?" do
+        expect(post).to_not be_undiscarded
+      end
+
+      it "should not be kept?" do
+        expect(post).to_not be_kept
       end
 
       describe '#discard' do
@@ -419,9 +451,16 @@ RSpec.describe Discard::Model do
         2.times { user1.comments.create! }
 
         user1.comments.discard_all
-
-        expect(user1.comments).to all(be_discarded)
-        expect(user2.comments).to all(be_undiscarded)
+        user1.comments.each do |comment|
+          expect(comment).to be_discarded
+          expect(comment).to_not be_undiscarded
+          expect(comment).to_not be_kept
+        end
+        user2.comments.each do |comment|
+          expect(comment).to_not be_discarded
+          expect(comment).to be_undiscarded
+          expect(comment).to be_kept
+        end
       end
     end
   end

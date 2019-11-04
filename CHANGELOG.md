@@ -1,6 +1,7 @@
 ### Unreleased
 
 * Add `discard_all!` and `undiscard_all!`
+* Add `undiscarded?` and `kept?` to match the scopes of the same names
 
 ### Version 1.1.0
 Release date: 2019-05-03
