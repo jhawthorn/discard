@@ -23,3 +23,6 @@ matrix:
       env: RAILS_VERSION='~> 6.0.0'
     - rvm: 2.4
       env: RAILS_VERSION='~> 6.0.0'
+    # Rails 4.2 uses BigDecimal.new, which Ruby 2.7 removed
+    - rvm: 2.7
+      env: RAILS_VERSION='~> 4.2.0'
