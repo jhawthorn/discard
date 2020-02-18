@@ -448,7 +448,7 @@ RSpec.describe Discard::Model do
         user2 = User.create!
 
         2.times { user1.comments.create! }
-        2.times { user1.comments.create! }
+        2.times { user2.comments.create! }
 
         user1.comments.discard_all
         user1.comments.each do |comment|
