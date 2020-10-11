@@ -195,7 +195,7 @@ class Post < ActiveRecord::Base
   end
 
   after_undiscard do
-    comments.undiscard_all
+    comments.with_discarded.undiscard_all
   end
 end
 ```
@@ -208,7 +208,7 @@ end
 
 `scope.update_all(discarded_at: Time.current)`
 or
-`scope.update_all(discarded_at: nil)`
+`scope.with_discarded.update_all(discarded_at: nil)`
 
 #### Working with Devise
 
