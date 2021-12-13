@@ -18,6 +18,8 @@ jobs:
           - ~> 5.1.0
           - ~> 5.2.0
           - ~> 6.0.0
+          - ~> 6.1.0
+          - ~> 7.0.0.alpha2
     container: docker://ruby
     steps:
     - uses: actions/checkout@v1
