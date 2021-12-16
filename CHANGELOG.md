@@ -1,5 +1,10 @@
 ### Unreleased
 
+### Version 1.2.1
+Release date: 2021-12-16
+
+* Support for ActiveRecord 7
+
 ### Version 1.2.0
 Release date: 2020-02-17
 
