@@ -686,4 +686,78 @@ RSpec.describe Discard::Model do
       end
     end
   end
+
+  describe 'when a callback raises during discard' do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+        after_discard :boom
+
+        def boom
+          raise "boom"
+        end
+      end
+    end
+
+    let!(:post) { Post.create! }
+
+    it "propagates the exception" do
+      expect { post.discard }.to raise_error("boom")
+    end
+
+    it "rolls back the DB write" do
+      expect { post.discard rescue nil }
+        .not_to change { Post.find(post.id).discarded? }
+    end
+
+    it "clears dirty tracking on the rolled-back attribute" do
+      post.discard rescue nil
+      expect(post.discarded_at_changed?).to be false
+    end
+
+    describe '#discard!' do
+      it "propagates the callback exception" do
+        expect { post.discard! }.to raise_error("boom")
+      end
+    end
+  end
+
+  describe 'when a callback raises during undiscard' do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+        after_undiscard :boom
+
+        def boom
+          raise "boom"
+        end
+      end
+    end
+
+    let!(:post) { Post.create!(discarded_at: Time.current) }
+
+    it "propagates the exception" do
+      expect { post.undiscard }.to raise_error("boom")
+    end
+
+    it "rolls back the DB write" do
+      expect { post.undiscard rescue nil }
+        .not_to change { Post.find(post.id).discarded? }
+    end
+
+    it "clears dirty tracking on the rolled-back attribute" do
+      post.undiscard rescue nil
+      expect(post.discarded_at_changed?).to be false
+    end
+  end
 end

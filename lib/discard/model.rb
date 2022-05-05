@@ -117,8 +117,11 @@ module Discard
     # @return [Boolean] true if successful, otherwise false
     def discard
       return false if discarded?
-      run_callbacks(:discard) do
-        update_attribute(self.class.discard_column, Time.current)
+
+      with_transaction_returning_status do
+        run_callbacks(:discard) do
+          update_attribute(self.class.discard_column, Time.current)
+        end
       end
     end
 
@@ -139,8 +142,11 @@ module Discard
     # @return [Boolean] true if successful, otherwise false
     def undiscard
       return false unless discarded?
-      run_callbacks(:undiscard) do
-        update_attribute(self.class.discard_column, nil)
+
+      with_transaction_returning_status do
+        run_callbacks(:undiscard) do
+          update_attribute(self.class.discard_column, nil)
+        end
       end
     end
 
