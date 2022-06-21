@@ -27,7 +27,7 @@ jobs:
             ruby_version: 2.5
     container: docker://ruby:${{ matrix.ruby_version }}
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
     - name: Build and test
       run: |
         gem install bundler
