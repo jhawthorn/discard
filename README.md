@@ -1,4 +1,4 @@
-# Discard [![Build Status](https://travis-ci.org/jhawthorn/discard.svg?branch=master)](https://travis-ci.org/jhawthorn/discard)
+# Discard [![Test](https://github.com/jhawthorn/discard/actions/workflows/test.yml/badge.svg)](https://github.com/jhawthorn/discard/actions/workflows/test.yml)
 
 Soft deletes for ActiveRecord done right.
 
