@@ -265,6 +265,8 @@ Discard takes a different approach. It doesn't override any ActiveRecord
 methods and instead simply provides convenience methods and scopes for
 discarding (hiding), restoring, and querying records.
 
+You can find more information about the history and purpose of Discard in [this blog post](https://supergood.software/introduction-to-discard/).
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
