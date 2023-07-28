@@ -117,8 +117,11 @@ module Discard
     # @return [Boolean] true if successful, otherwise false
     def discard
       return false if discarded?
-      run_callbacks(:discard) do
-        update_attribute(self.class.discard_column, Time.current)
+
+      _in_discard_transaction do
+        run_callbacks(:discard) do
+          update_attribute(self.class.discard_column, Time.current)
+        end
       end
     end
 
@@ -139,8 +142,11 @@ module Discard
     # @return [Boolean] true if successful, otherwise false
     def undiscard
       return unless discarded?
-      run_callbacks(:undiscard) do
-        update_attribute(self.class.discard_column, nil)
+
+      _in_discard_transaction do
+        run_callbacks(:undiscard) do
+          update_attribute(self.class.discard_column, nil)
+        end
       end
     end
 
@@ -157,6 +163,18 @@ module Discard
     end
 
     private
+
+    def _in_discard_transaction
+      previous_discard_value = public_send(self.class.discard_column)
+
+      with_transaction_returning_status do
+        yield
+      end
+    rescue
+      assign_attributes(self.class.discard_column => previous_discard_value)
+
+      raise
+    end
 
     def _raise_record_not_discarded
       raise ::Discard::RecordNotDiscarded.new("Failed to discard the record", self)
