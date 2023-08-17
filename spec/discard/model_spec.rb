@@ -85,6 +85,10 @@ RSpec.describe Discard::Model do
             post.undiscard
           }.not_to change { post.reload.discarded_at }
         end
+
+        it "returns false" do
+          expect(post.undiscard).to be false
+        end
       end
 
       describe '#undiscard!' do
@@ -138,6 +142,10 @@ RSpec.describe Discard::Model do
           expect {
             post.discard
           }.not_to change { post.reload.discarded_at }
+        end
+
+        it "returns false" do
+          expect(post.discard).to be false
         end
       end
 
