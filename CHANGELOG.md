@@ -1,5 +1,8 @@
 ### Unreleased
 
+* Fix `undiscard` so it returns false instead of nil when the record isn't
+  discarded (#95, #96)
+
 ### Version 1.2.1
 Release date: 2021-12-16
 
