@@ -15,6 +15,10 @@ jobs:
     strategy:
       matrix:
         include:
+          - rails_version: ~> 7.1.0
+            ruby_version: 3.2
+          - rails_version: ~> 7.1.0
+            ruby_version: 3.1
           - rails_version: ~> 7.0.0
             ruby_version: 3.2
           - rails_version: ~> 7.0.0
