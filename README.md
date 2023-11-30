@@ -98,6 +98,14 @@ def update
 end
 ```
 
+#### Overriding scopes and methods
+
+The scope `kept` the method `kept?` are aliases to `undiscarded` and `undiscarded?`.
+
+If you need to override those, it is recommended that you override the `undiscarded`
+scope and the `undiscarded?` method since the `kept` / `kept?` aliaeses will point
+to your overriden scope and method.
+
 #### Working with associations
 
 Under paranoia, soft deleting a record will destroy any `dependent: :destroy`
@@ -120,17 +128,17 @@ Comment.kept # SELECT * FROM comments WHERE discarded_at IS NULL
 ```
 
 Or you could decide that comments are dependent on their posts not being
-discarded. Just override the `kept` scope on the Comment model.
+discarded. Just override the `undiscarded` scope on the Comment model.
 
 ``` ruby
 class Comment < ActiveRecord::Base
   belongs_to :post
 
   include Discard::Model
-  scope :kept, -> { undiscarded.joins(:post).merge(Post.kept) }
+  scope :undiscarded, -> { where(discarded_at: nil).joins(:post).merge(Post.kept) }
 
-  def kept?
-    undiscarded? && post.kept?
+  def undiscarded?
+    super && post.kept?
   end
 end
 
@@ -201,7 +209,6 @@ end
 ```
 
 *Warning:* Please note that callbacks for save and update are run when discarding/undiscarding a record
-
 
 #### Performance tuning
 `discard_all` and `undiscard_all` is intended to behave like `destroy_all` which has callbacks, validations, and does one query per record. If performance is a big concern, you may consider replacing it with:
