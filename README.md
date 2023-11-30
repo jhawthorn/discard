@@ -103,7 +103,7 @@ end
 The scope `kept` the method `kept?` are aliases to `undiscarded` and `undiscarded?`.
 
 If you need to override those, it is recommended that you override the `undiscarded`
-scope and the `undiscarded?` method since the `kept` / `kept?` aliaeses will point
+scope and the `undiscarded?` method since the `kept` / `kept?` aliases will point
 to your overriden scope and method.
 
 #### Working with associations
