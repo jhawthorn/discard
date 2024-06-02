@@ -144,7 +144,7 @@ module Discard
       end
     end
 
-    # Discard the record in the database
+    # Undiscard the record in the database
     #
     # There's a series of callbacks associated with #undiscard!. If the
     # <tt>before_undiscard</tt> callback throws +:abort+ the action is cancelled
