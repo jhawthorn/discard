@@ -159,14 +159,14 @@ module Discard
     private
 
     def _raise_record_not_discarded
-      raise ::Discard::RecordNotDiscarded.new(disacrded_fail_message, self)
+      raise ::Discard::RecordNotDiscarded.new(discarded_fail_message, self)
     end
 
     def _raise_record_not_undiscarded
       raise ::Discard::RecordNotUndiscarded.new(undiscarded_fail_message, self)
     end
 
-    def disacrded_fail_message
+    def discarded_fail_message
       return "A discarded record cannot be discarded" if discarded?
 
       "Failed to discard the record"
