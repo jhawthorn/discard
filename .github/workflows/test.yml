@@ -13,33 +13,36 @@ jobs:
     runs-on: ubuntu-latest
     name: Test on Rails ${{ matrix.rails_version }} and Ruby ${{ matrix.ruby_version }}
     strategy:
+      fail-fast: false
       matrix:
         include:
+          - rails_version: ~> 7.2.0
+            ruby_version: '3.3'
+            sqlite_version: ~> 2.0
+          - rails_version: ~> 7.2.0
+            ruby_version: '3.2'
+            sqlite_version: ~> 2.0
+          - rails_version: ~> 7.2.0
+            ruby_version: '3.1'
+            sqlite_version: ~> 2.0
           - rails_version: ~> 7.1.0
-            ruby_version: 3.3
-          - rails_version: ~> 7.1.0
-            ruby_version: 3.2
-          - rails_version: ~> 7.1.0
-            ruby_version: 3.1
+            ruby_version: '3.3'
+            sqlite_version: ~> 1.0
           - rails_version: ~> 7.0.0
-            ruby_version: 3.2
-          - rails_version: ~> 7.0.0
-            ruby_version: 3.1
+            ruby_version: '3.2'
+            sqlite_version: ~> 1.0
           - rails_version: ~> 6.1.0
             ruby_version: '3.0'
-          - rails_version: ~> 6.0.0
-            ruby_version: 2.7
-          - rails_version: ~> 5.2.0
-            ruby_version: 2.6
-          - rails_version: ~> 5.1.0
-            ruby_version: 2.5
+            sqlite_version: ~> 1.0
     env:
       RAILS_VERSION: ${{ matrix.rails_version }}
+      SQLITE_VERSION: ${{ matrix.sqlite_version }}
     steps:
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby_version }}
-        bundler-cache: true
+    - name: Bundle install
+      run: bundle install
     - name: Test
       run: bundle exec rake 
