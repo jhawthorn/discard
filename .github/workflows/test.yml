@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Test on Rails ${{ matrix.rails_version }} and Ruby ${{ matrix.ruby_version }}
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         include:
           - rails_version: ~> 7.2.0
             ruby_version: '3.3'
