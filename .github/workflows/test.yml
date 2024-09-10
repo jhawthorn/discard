@@ -40,6 +40,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby_version }}
-        bundler-cache: true
+    - name: Bundle install
+      run: bundle install
     - name: Test
       run: bundle exec rake 
