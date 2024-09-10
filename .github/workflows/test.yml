@@ -14,7 +14,7 @@ jobs:
     name: Test on Rails ${{ matrix.rails_version }} and Ruby ${{ matrix.ruby_version }}
     strategy:
       matrix:
-        fail_
+        fail-fast: false
         include:
           - rails_version: ~> 7.2.0
             ruby_version: '3.3'
