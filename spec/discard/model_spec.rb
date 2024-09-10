@@ -95,7 +95,7 @@ RSpec.describe Discard::Model do
         it "raises Discard::RecordNotUndiscarded" do
           expect {
             post.undiscard!
-          }.to raise_error(Discard::RecordNotUndiscarded)
+          }.to raise_error(Discard::RecordNotUndiscarded, 'An undiscarded record cannot be undiscarded')
         end
       end
     end
@@ -153,7 +153,7 @@ RSpec.describe Discard::Model do
         it "raises Discard::RecordNotDiscarded" do
           expect {
             post.discard!
-          }.to raise_error(Discard::RecordNotDiscarded)
+          }.to raise_error(Discard::RecordNotDiscarded, "A discarded record cannot be discarded")
         end
       end
 
@@ -616,7 +616,7 @@ RSpec.describe Discard::Model do
           expect(post).to receive(:do_before_discard) { abort_callback }
           expect {
             post.discard!
-          }.to raise_error(Discard::RecordNotDiscarded)
+          }.to raise_error(Discard::RecordNotDiscarded, "Failed to discard the record")
         end
       end
     end
@@ -677,11 +677,11 @@ RSpec.describe Discard::Model do
       end
 
       describe '#undiscard!' do
-        it "raises Discard::RecordNotDiscarded" do
+        it "raises Discard::RecordNotUndiscarded" do
           expect(post).to receive(:do_before_undiscard) { abort_callback }
           expect {
             post.undiscard!
-          }.to raise_error(Discard::RecordNotUndiscarded)
+          }.to raise_error(Discard::RecordNotUndiscarded, "Failed to undiscard the record")
         end
       end
     end
