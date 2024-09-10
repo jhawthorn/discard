@@ -14,13 +14,17 @@ jobs:
     name: Test on Rails ${{ matrix.rails_version }} and Ruby ${{ matrix.ruby_version }}
     strategy:
       matrix:
+        fail_
         include:
           - rails_version: ~> 7.2.0
             ruby_version: '3.3'
+            sqlite_version: ~> 2.0
           - rails_version: ~> 7.2.0
             ruby_version: '3.2'
+            sqlite_version: ~> 2.0
           - rails_version: ~> 7.2.0
             ruby_version: '3.1'
+            sqlite_version: ~> 2.0
           - rails_version: ~> 7.1.0
             ruby_version: '3.3'
             sqlite_version: ~> 1.0
