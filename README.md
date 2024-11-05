@@ -13,7 +13,7 @@ A simple ActiveRecord mixin to add conventions for flagging records as discarded
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'discard', '~> 1.2'
+gem 'discard', '~> 1.4'
 ```
 
 And then execute:
