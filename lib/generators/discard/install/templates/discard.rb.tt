@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+require "discard"
+
+Discard.configure do |config|
+  # config.discard_column = :deleted_at # default :discarded_at
+end

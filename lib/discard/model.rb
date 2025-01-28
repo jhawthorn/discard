@@ -11,7 +11,7 @@ module Discard
 
     included do
       class_attribute :discard_column
-      self.discard_column = :discarded_at
+      self.discard_column = Discard.configuration.discard_column
 
       scope :kept, ->{ undiscarded }
       scope :undiscarded, ->{ where(discard_column => nil) }

@@ -168,10 +168,28 @@ Post.with_discarded.discarded  # Only discarded posts
 If you're migrating from paranoia, you might want to continue using the same
 column.
 
+You can either configure it per model basis:
+
 ``` ruby
 class Post < ActiveRecord::Base
   include Discard::Model
   self.discard_column = :deleted_at
+end
+```
+
+Or for the project:
+
+```bash
+rails generate discard:install
+```
+
+And configure:
+
+`config/initializers/discard.rb`
+
+```ruby
+Discard.configure do |config|
+  config.discard_column = :deleted_at
 end
 ```
 
