@@ -136,11 +136,20 @@ module Discard
 
     # Undiscard the record in the database
     #
+    # @param context [Symbol] optional validation context to use
     # @return [Boolean] true if successful, otherwise false
-    def undiscard
+    def undiscard(context: :undiscard)
       return false unless discarded?
+
       run_callbacks(:undiscard) do
-        update_attribute(self.class.discard_column, nil)
+        if context
+          with_transaction_returning_status do
+            self.validation_context = context
+            update(self.class.discard_column => nil)
+          end
+        else
+          update_attribute(self.class.discard_column, nil)
+        end
       end
     end
 
@@ -150,10 +159,11 @@ module Discard
     # <tt>before_undiscard</tt> callback throws +:abort+ the action is cancelled
     # and #undiscard! raises {Discard::RecordNotUndiscarded}.
     #
+    # @param context [Symbol] optional validation context to use
     # @return [Boolean] true if successful
     # @raise {Discard::RecordNotUndiscarded}
-    def undiscard!
-      undiscard || _raise_record_not_undiscarded
+    def undiscard!(context: :undiscard)
+      undiscard(context: context) || _raise_record_not_undiscarded
     end
 
     private

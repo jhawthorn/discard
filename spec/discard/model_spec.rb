@@ -391,6 +391,97 @@ RSpec.describe Discard::Model do
     end
   end
 
+  context 'with model validation contexts' do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.string :title
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+
+        validates :title, uniqueness: { conditions: -> { kept } }
+        validates :title, uniqueness: true, on: :undiscard
+      end
+    end
+
+    let!(:post) { Post.create!(title: "A discarded post", discarded_at: Time.parse('2017-01-01')) }
+
+    describe '#undiscard' do
+      it "uses the :undiscard validation context when context is not set" do
+        expect(post).to receive(:validation_context=).with(:undiscard).and_call_original
+        post.undiscard
+      end
+
+      it "sets validation context when context is specified" do
+        expect(post).to receive(:validation_context=).with(:custom_context).and_call_original
+        post.undiscard(context: :custom_context)
+      end
+
+      it "does not set the validation context when context is nil" do
+        expect(post).not_to receive(:validation_context=)
+        post.undiscard(context: nil)
+      end
+
+      it "fails undiscard when validation fails with default context" do
+        post = Post.create!(title:  "duplicate")
+        post.discard
+        Post.create!(title: "duplicate")
+        post.undiscard
+
+        expect(post).not_to be_discarded
+        expect(post.errors[:title]).to include("has already been taken")
+      end
+
+      it "succeeds undiscard when context is nil (skipping validations)" do
+        post = Post.create!(title: "duplicate")
+        post.discard
+        Post.create!(title: "duplicate")
+
+        expect(post.undiscard(context: nil)).to be true
+        expect(post.reload).not_to be_discarded
+      end
+    end
+
+    describe '#undiscard!' do
+      it "uses the :undiscard validation context when context is not set" do
+        expect(post).to receive(:validation_context=).with(:undiscard).and_call_original
+        post.undiscard!
+      end
+
+      it "sets validation context when context is specified" do
+        expect(post).to receive(:validation_context=).with(:custom_context).and_call_original
+        post.undiscard!(context: :custom_context)
+      end
+
+      it "does not set the validation context when context is nil" do
+        expect(post).not_to receive(:validation_context=)
+        post.undiscard!(context: nil)
+      end
+
+      it "raises RecordNotUndiscarded when validation fails with default context" do
+        post = Post.create!(title: "duplicate")
+        post.discard
+        Post.create!(title: "duplicate")
+
+        expect do
+          post.undiscard!
+        end.to raise_error(Discard::RecordNotUndiscarded, "An undiscarded record cannot be undiscarded")
+      end
+
+      it "succeeds undiscard! when context is nil (skipping validations)" do
+        post = Post.create!(title: "duplicate")
+        post.discard
+        Post.create!(title: "duplicate")
+
+        expect(post.undiscard!(context: nil)).to be true
+        expect(post.reload).not_to be_discarded
+      end
+    end
+  end
+
   describe '.discard_all' do
     with_model :Post, scope: :all do
       table do |t|
