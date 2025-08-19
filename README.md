@@ -149,8 +149,14 @@ In both of these cases restoring either of these records will do right thing!
 
 #### Default scope
 
-It's usually undesirable to add a default scope. It will take more effort to
-work around and will cause more headaches. If you know you need a default scope, it's easy to add yourself ❤.
+Active Record Default scopes can be confusing - because they're magically injected by default - and
+much has been written about avoiding them. There's even a Rubocop Rails::DefaultScope that automates
+that advice. For these reasons, discard does not automatically set a default scope to only see undiscarded
+rows.
+
+However, many developers will find a default scope to be exactly what they want, because it will
+follow the Principle of Least Surprise when coming from a codebase that does hard deletes. If desired, it
+takes just one line of code to set the default scope as shown here:
 
 ``` ruby
 class Post < ActiveRecord::Base
