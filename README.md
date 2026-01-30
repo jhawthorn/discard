@@ -98,6 +98,39 @@ def update
 end
 ```
 
+### Validate undiscarded records
+
+The `undiscard` method supports a validation context option that's useful when you need to run model validations during
+undiscard operations. This ensures that undiscarded records meet the same validation criteria as kept records.
+
+```ruby
+class Post < ActiveRecord::Base
+  include Discard::Model
+  
+  # Ensure unique titles in kept posts
+  validates :title, uniqueness: { conditions: -> { kept } }
+
+  # Ensure unique titles when undiscarding posts
+  validates :title, uniqueness: true, on: :undiscard
+end
+
+# Uses the default :undiscard context
+post.undiscard # Validates with :undiscard context
+
+# Use a custom validation context
+post.undiscard(context: :custom_context)  # Validates with :custom_context
+
+# Skip validations entirely
+post.undiscard(context: nil) # Skips validations
+```
+
+The `undiscard!` method also accepts the same context option:
+
+```ruby
+# Raises Discard::RecordNotUndiscarded if validation fails
+post.undiscard!(context: :custom_context)
+```
+
 #### Working with associations
 
 Under paranoia, soft deleting a record will destroy any `dependent: :destroy`
