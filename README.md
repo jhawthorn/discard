@@ -1,36 +1,21 @@
-# Discard [![Test](https://github.com/jhawthorn/discard/actions/workflows/test.yml/badge.svg)](https://github.com/jhawthorn/discard/actions/workflows/test.yml)
+# Discard [![Test](https://github.com/jhawthorn/discard/actions/workflows/test.yml/badge.svg)](https://github.com/jhawthorn/discard
 
-Soft deletes for ActiveRecord done right.
-
-<img src="http://i.hawth.ca/u/ron-swanson-computer-trash.gif" width="800" />
+ https://i.hawth.ca/u/ron-swanson-computer-trash.gif" width="433" />
 
 ## What does this do?
 
 A simple ActiveRecord mixin to add conventions for flagging records as discarded.
-
-## Installation
+ Installation
 
 Add this line to your application's Gemfile:
 
-```ruby
-gem 'discard', '~> 1.4'
-```
 
 And then execute:
+Usage
 
-    $ bundle
-
-## Usage
-
-**Declare a record as discardable**
+Declare a record as discardable
 
 Declare the record as being discardable
-
-``` ruby
-class Post < ActiveRecord::Base
-  include Discard::Model
-end
-```
 
 You can either generate a migration using:
 ```
@@ -41,7 +26,7 @@ or create one yourself like the one below:
 ``` ruby
 class AddDiscardToPosts < ActiveRecord::Migration[5.0]
   def change
-    add_column :posts, :discarded_at, :datetime
+    add_column :posts, :discarded
     add_index :posts, :discarded_at
   end
 end
@@ -51,24 +36,21 @@ end
 #### Discard a record
 
 ```ruby
-Post.all             # => [#<Post id: 1, ...>]
-Post.kept            # => [#<Post id: 1, ...>]
-Post.discarded       # => []
+Post.all             [<Post id:433>]
+Post.kept           [#<Post id:433>]
+Post.discarded       
 
-post = Post.first   # => #<Post id: 1, ...>
+post = Post.first   # => #<Post id:433>
 post.discard        # => true
-post.discard!       # => Discard::RecordNotDiscarded: Failed to discard the record
-post.discarded?     # => true
+post.discard!       # => Discard::RecordNotDiscarded: Failed to discard the recordst.discarded?  true
 post.undiscarded?   # => false
 post.kept?          # => false
 post.discarded_at   # => 2017-04-18 18:49:49 -0700
 
 Post.all             # => [#<Post id: 1, ...>]
 Post.kept            # => []
-Post.discarded       # => [#<Post id: 1, ...>]
-```
-
-***From a controller***
+Post.discarded       # => [#<Post id:433
+From a controller
 
 Controller actions need a small modification to discard records instead of deleting them. Just replace `destroy` with `discard`.
 
@@ -77,13 +59,10 @@ def destroy
   @post.discard
   redirect_to users_url, notice: "Post removed"
 end
-```
-
-
-#### Undiscard a record
+```Undiscard a record
 
 ```ruby
-post = Post.first   # => #<Post id: 1, ...>
+post = Post.first   # => #<Post id: 433
 post.undiscard      # => true
 post.undiscard!     # => Discard::RecordNotUndiscarded: Failed to undiscard the record
 post.discarded_at   # => nil
@@ -96,9 +75,7 @@ def update
   @post.undiscard
   redirect_to users_url, notice: "Post undiscarded"
 end
-```
-
-#### Working with associations
+Working with associations
 
 Under paranoia, soft deleting a record will destroy any `dependent: :destroy`
 associations. Probably not what you want! This leads to all dependent records
@@ -147,7 +124,7 @@ SQL databases are very good at this, and performance should not be an issue.
 In both of these cases restoring either of these records will do right thing!
 
 
-#### Default scope
+Default scope
 
 It's usually undesirable to add a default scope. It will take more effort to
 work around and will cause more headaches. If you know you need a default scope, it's easy to add yourself ❤.
@@ -159,11 +136,10 @@ class Post < ActiveRecord::Base
 end
 
 Post.all                       # Only kept posts
-Post.with_discarded            # All Posts
+Post.with_discarded            # Only
+Posts
 Post.with_discarded.discarded  # Only discarded posts
-```
-
-#### Custom column
+```Custom column
 
 If you're migrating from paranoia, you might want to continue using the same
 column.
@@ -175,7 +151,6 @@ class Post < ActiveRecord::Base
 end
 ```
 
-#### Callbacks
 
 Callbacks can be run before, after, or around the discard and undiscard operations.
 A likely use is discarding or deleting associated records (but see "Working with associations" for an alternative).
@@ -200,10 +175,9 @@ class Post < ActiveRecord::Base
 end
 ```
 
-*Warning:* Please note that callbacks for save and update are run when discarding/undiscarding a record
+Warning:Please note that callbacks for save and update are run when discarding/undiscarding a record
 
-
-#### Performance tuning
+ Performance tuning
 `discard_all` and `undiscard_all` is intended to behave like `destroy_all` which has callbacks, validations, and does one query per record. If performance is a big concern, you may consider replacing it with:
 
 `scope.update_all(discarded_at: Time.current)`
@@ -227,15 +201,15 @@ end
 
 * Special handling of AR counter cache columns - The counter cache counts the total number of records, both kept and discarded.
 * Recursive discards (like AR's dependent: destroy) - This can be avoided using queries (See "Working with associations") or emulated using callbacks.
-* Recursive restores - This concept is fundamentally broken, but not necessary if the recursive discards are avoided.
+Recursive restores - This concept is fundamentally broken, but not necessary if the recursive discards are avoided.
 
-## Extensions
+Extensions
 
 Discard provides the smallest subset of soft-deletion features that we think are useful to all users of the gem. We welcome the addition of gems that work with Discard to provide additional features.
 
 - [discard-rails-observers](https://github.com/pelargir/discard-rails-observers) integrates discard with the [rails-observers gem](https://github.com/rails/rails-observers)
 
-## Why not paranoia or acts_as_paranoid?
+Why not paranoia or acts_as_paranoid?
 
 I've worked with and have helped maintain
 [paranoia](https://github.com/rubysherpas/paranoia) for a while. I'm convinced
@@ -247,15 +221,13 @@ attempt to emulate deletes by setting a column and adding a default scope on the
 model. This requires some ActiveRecord hackery, and leads to some surprising
 and awkward behaviour.
 
-* A default scope is added to hide soft-deleted records, which necessitates
-  adding `.with_deleted` to associations or anywhere soft-deleted records
-  should be found. :disappointed:
-  * Adding `belongs_to :child, -> { with_deleted }` helps, but doesn't work for
+ A default scope is added to hide soft-deleted records, which necessitates
+  adding to associations or anywhere soft- records
+  should be found. :disappointed Adding `belongs_to :child, -> { with` helps, but doesn't work for
     joins and eager-loading [before Rails 5.2](https://github.com/rubysherpas/paranoia/issues/355)
-* `delete` is overridden (`really_delete` will actually delete the record) :unamused:
-* `destroy` is overridden (`really_destroy` will actually delete the record) :pensive:
-* `dependent: :destroy` associations are deleted when performing soft-destroys :scream:
-  * requiring any dependent records to also be `acts_as_paranoid` to avoid losing data. :grimacing:
+overridden  will actually  the record) :unamused:` is overridden  will actually delete the record) :pensive:
+ associations are when performing soft-destroys :scream:
+   requiring any dependent records to also be `acts_as_paranoid` to avoid losing data. :grimacing:
 
 There are some use cases where these behaviours make sense: if you really did
 want to _almost_ delete the record. More often developers are just looking to
@@ -279,12 +251,12 @@ Discard is very simple and we like it that way. Creating your own clone or fork 
 
 If you find a bug in discard, please report it! We try to keep up with any issues and keep the gem running smoothly for everyone! You can report issues [here](https://github.com/jhawthorn/discard/issues).
 
-## License
+License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
-## Acknowledgments
-
-* [Ben Morgan](https://github.com/BenMorganIO) who has done a great job maintaining paranoia
-* [Ryan Bigg](http://github.com/radar), the original author of paranoia (and many things), as a simpler replacement of acts_as_paranoid
-* All paranoia users and contributors
+Acknowledgments
+[Ben Morgan](https://github.com/BenMorganIO) who has done a great job maintaining paranoia
+[Ryan Bigg](http://github.com/radar), the original author on paranoia (and many things), as a simpler replacement on acts_as_paranoid
+ All paranoia users and contributors
+(+)
