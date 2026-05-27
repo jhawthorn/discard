@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Require ActiveRecord >= 7.0; drop support for Rails 6.x and earlier
+
 ### Version 1.4.0
 Release date: 2024-11-05
 
