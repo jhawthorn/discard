@@ -1,6 +1,7 @@
 ### Unreleased
 
 * Require ActiveRecord >= 7.0; drop support for Rails 6.x and earlier
+* Wrap `#discard` / `#undiscard` in a transaction so callback exceptions roll back the DB write (#84, #77)
 
 ### Version 1.4.0
 Release date: 2024-11-05
