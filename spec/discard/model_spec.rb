@@ -687,6 +687,63 @@ RSpec.describe Discard::Model do
     end
   end
 
+  describe 'discarded? value within validations and callbacks' do
+    with_model :Post, scope: :all do
+      table do |t|
+        t.datetime :discarded_at
+        t.timestamps null: false
+      end
+
+      model do
+        include Discard::Model
+        validate :guarded_validation, if: :discarded?
+        before_discard :guarded_before_discard, if: :discarded?
+        after_discard :guarded_after_discard, if: :discarded?
+        before_undiscard :guarded_before_undiscard, if: :discarded?
+        after_undiscard :guarded_after_undiscard, if: :discarded?
+
+        def guarded_validation; end
+        def guarded_before_discard; end
+        def guarded_after_discard; end
+        def guarded_before_undiscard; end
+        def guarded_after_undiscard; end
+      end
+    end
+
+    context 'on #discard' do
+      let!(:post) { Post.create! }
+
+      it "skips validations gated on if: :discarded?" do
+        expect(post).not_to receive(:guarded_validation)
+        expect(post.discard).to be true
+      end
+
+      it "does not run before_discard gated on if: :discarded?" do
+        expect(post).not_to receive(:guarded_before_discard)
+        expect(post.discard).to be true
+      end
+
+      it "runs after_discard gated on if: :discarded?" do
+        expect(post).to receive(:guarded_after_discard)
+        expect(post.discard).to be true
+      end
+    end
+
+    context 'on #undiscard' do
+      let!(:post) { Post.create! discarded_at: Time.now }
+
+      it "runs before_undiscard gated on if: :discarded?" do
+        expect(post).to receive(:guarded_before_undiscard)
+        expect(post.undiscard).to be true
+      end
+
+      it "does not run after_undiscard gated on if: :discarded?" do
+        expect(post).not_to receive(:guarded_after_undiscard)
+        expect(post.undiscard).to be true
+      end
+    end
+  end
+
   describe 'when a callback raises during discard' do
     with_model :Post, scope: :all do
       table do |t|
