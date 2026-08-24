@@ -11,12 +11,24 @@ module Discard
 
     included do
       class_attribute :discard_column
+      class_attribute :discard_virtual_query_column
       self.discard_column = :discarded_at
 
       scope :kept, ->{ undiscarded }
-      scope :undiscarded, ->{ where(discard_column => nil) }
-      scope :discarded, ->{ where.not(discard_column => nil) }
-      scope :with_discarded, ->{ unscope(where: discard_column) }
+
+      scope :undiscarded, ->do
+        return where(discard_virtual_query_column => false) if discard_virtual_query_column?
+
+        where(discard_column => nil)
+      end
+
+      scope :discarded, ->do
+        return where(discard_virtual_query_column => true) if discard_virtual_query_column?
+
+        where.not(discard_column => nil)
+      end
+
+      scope :with_discarded, ->{ unscope(where: discard_virtual_query_column || discard_column) }
 
       define_model_callbacks :discard
       define_model_callbacks :undiscard

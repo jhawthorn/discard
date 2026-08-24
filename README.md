@@ -207,13 +207,33 @@ Some important things to note:
 - The discard column is also flipped *between* the `before_` and `after_` callbacks, so `before_discard` sees `discarded?` as `false` while `after_discard` sees it as `true` (and symmetrically for undiscard). Callbacks gated on `if: :discarded?` will fire accordingly, which is useful when a callback should only run on one side of the transition.
 
 
-#### Performance tuning
+#### Performance tuning on updates
 
 `discard_all` and `undiscard_all` is intended to behave like `destroy_all` which has callbacks, validations, and does one query per record. If performance is a big concern, you may consider replacing it with:
 
 `scope.update_all(discarded_at: Time.current)`
 or
 `scope.update_all(discarded_at: nil)`
+
+#### Performance tuning on queries
+
+Because this gem uses a `DATETIME` field, you may notice that your RDS is not using the full index for your queries.
+This is because clauses in the form of `WHERE discarded_at IS NULL` are range queries, which prevent RDS engines from using any subsequent fields in the index.
+
+If you are encountering this issue, the easiest workaround is:
+* Create a `VIRTUAL` column with the expression: `<name_of_discard_column> IS NULL`
+* Add the virtual column to your indices in place of the discard column
+* Define the virtual column on your model as your preferred column for queries:
+
+```ruby
+class User < ActiveRecord::Base
+  include Discard::Model
+
+  self.discard_virtual_query_column = :name_of_virtual_column
+end
+```
+
+...And that's it! You don't have to change any other code.
 
 #### Working with Devise
 
