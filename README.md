@@ -13,7 +13,7 @@ A simple ActiveRecord mixin to add conventions for flagging records as discarded
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'discard', '~> 1.4'
+gem 'discard', '~> 2.0'
 ```
 
 And then execute:
@@ -33,6 +33,7 @@ end
 ```
 
 You can either generate a migration using:
+
 ```
 rails generate migration add_discarded_at_to_posts discarded_at:datetime:index
 ```
@@ -46,7 +47,6 @@ class AddDiscardToPosts < ActiveRecord::Migration[5.0]
   end
 end
 ```
-
 
 #### Discard a record
 
@@ -200,10 +200,15 @@ class Post < ActiveRecord::Base
 end
 ```
 
-*Warning:* Please note that callbacks for save and update are run when discarding/undiscarding a record
+Some important things to note:
+
+- Callbacks for save and update are run when discarding/undiscarding a record.
+- Validations are not run during `#discard` or `#undiscard`. The column is updated via `update_attribute`, which skips validations.
+- The discard column is also flipped *between* the `before_` and `after_` callbacks, so `before_discard` sees `discarded?` as `false` while `after_discard` sees it as `true` (and symmetrically for undiscard). Callbacks gated on `if: :discarded?` will fire accordingly, which is useful when a callback should only run on one side of the transition.
 
 
 #### Performance tuning
+
 `discard_all` and `undiscard_all` is intended to behave like `destroy_all` which has callbacks, validations, and does one query per record. If performance is a big concern, you may consider replacing it with:
 
 `scope.update_all(discarded_at: Time.current)`
@@ -269,7 +274,7 @@ You can find more information about the history and purpose of Discard in [this 
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake rspec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 ## Contributing
 

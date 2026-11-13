@@ -16,7 +16,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - rails_version: 8.0.0.rc1
+          - rails_version: ~> 8.1.0
+            ruby_version: '4.0'
+            sqlite_version: ~> 2.0
+          - rails_version: ~> 8.1.0
+            ruby_version: '3.4'
+            sqlite_version: ~> 2.0
+          - rails_version: ~> 8.0.0
+            ruby_version: '3.4'
+            sqlite_version: ~> 2.0
+          - rails_version: ~> 8.0.0
             ruby_version: '3.3'
             sqlite_version: ~> 2.0
           - rails_version: ~> 7.2.0
@@ -24,9 +33,6 @@ jobs:
             sqlite_version: ~> 2.0
           - rails_version: ~> 7.2.0
             ruby_version: '3.2'
-            sqlite_version: ~> 2.0
-          - rails_version: ~> 7.2.0
-            ruby_version: '3.1'
             sqlite_version: ~> 2.0
           - rails_version: ~> 7.1.0
             ruby_version: '3.3'
@@ -34,14 +40,11 @@ jobs:
           - rails_version: ~> 7.0.0
             ruby_version: '3.2'
             sqlite_version: ~> 1.0
-          - rails_version: ~> 6.1.0
-            ruby_version: '3.0'
-            sqlite_version: ~> 1.0
     env:
       RAILS_VERSION: ${{ matrix.rails_version }}
       SQLITE_VERSION: ${{ matrix.sqlite_version }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby_version }}
